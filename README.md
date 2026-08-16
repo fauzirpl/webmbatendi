@@ -76,8 +76,16 @@ Yang bisa diatur tanpa menyentuh kode:
   pemakaiannya; spider, empire, dan zoo masing-masing muncul dua kali.
 - **Musik** — lagu latar yang diputar berulang, lengkap dengan pemutar
   pratinjau di panel supaya bisa dicek sebelum dipakai.
+- **Rundown** — tambah, hapus, geser urutan, dan ubah isi tiap baris acara.
+  Perubahan disunting dulu di memori lalu dikirim sekali lewat RPC
+  `simpan_rundown()`, yang mengganti seluruh daftar dalam satu transaksi —
+  jadi tidak mungkin berhenti di tengah dan meninggalkan rundown separuh
+  lama separuh baru di halaman yang sedang dibuka orang.
 - **Teks** — keterangan galeri, nomor rekening + atas nama, paragraf
-  perkenalan, catatan tulisan tangan di bawah jam.
+  perkenalan, catatan tulisan tangan di bawah jam, plus label status dan
+  catatan kaki rundown. Dua yang terakhir kalau **dikosongkan akan hilang
+  dari halaman** — jadi begitu rundown-nya fix, kosongkan saja label
+  "DRAFT"-nya.
 - **Ucapan** — lihat semuanya dan hapus yang tidak pantas. Ini penting
   karena ucapannya dibacakan di depan orang banyak.
 
@@ -136,7 +144,17 @@ Projek Supabase: `pelepasan-tandika` (`djzzayvisldfuczhqmjb`),
 region ap-southeast-1 (Singapura), free tier, $0/bulan.
 
 Tabelnya: `wishes` (ucapan), `content` (foto & teks yang bisa diedit),
-`admins` (daftar putih pengelola), plus bucket penyimpanan `foto`.
+`rundown` (susunan acara), `admins` (daftar putih pengelola), plus bucket
+penyimpanan `foto`.
+
+`rundown` sengaja jadi tabel sendiri, bukan slot tetap di `content`, karena
+jumlah barisnya berubah-ubah. Publik hanya boleh membacanya; tidak ada
+policy tulis sama sekali — satu-satunya jalan mengubah adalah RPC
+`simpan_rundown()` yang memeriksa `is_admin()` sendiri (wajib, karena
+`SECURITY DEFINER` melewati RLS).
+
+Halaman punya cadangan rundown bawaan di `RUNDOWN_AWAL`. Kalau Supabase
+tak terjangkau, yang tampil rundown lama — bukan kotak kosong.
 
 `public.wishes`:
 

@@ -67,6 +67,15 @@ textarea{min-height:92px;line-height:1.6;resize:vertical}
 .ucapan .bwh{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .pil{padding:3px 9px;border-radius:999px;background:rgba(15,27,45,.08);font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em}
 
+/* satu baris rundown: waktu sempit di kiri, judul melebar di kanan */
+.rd{display:grid;grid-template-columns:88px 1fr;gap:8px}
+.rd-aksi{display:flex;gap:6px;justify-content:flex-end;align-items:center;margin-top:9px}
+.rd-aksi .no{margin-right:auto;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:rgba(245,240,230,.35)}
+.rd-aksi button{padding:6px 10px;font-size:11.5px;border-radius:8px;border:1px solid rgba(245,240,230,.18);
+  background:transparent;color:rgba(245,240,230,.7);cursor:pointer;line-height:1}
+.rd-aksi button:disabled{opacity:.3;cursor:default}
+.rd-aksi button.hapus{border-color:rgba(196,70,47,.45);color:#E08571}
+
 .kosong{padding:28px 18px;text-align:center;border:1px dashed rgba(245,240,230,.2);border-radius:14px;color:rgba(245,240,230,.5);font-size:13px}
 .hint{font-size:11.5px;line-height:1.6;color:rgba(245,240,230,.45);margin-top:8px}
 .err{padding:11px 13px;border-radius:10px;background:rgba(196,70,47,.16);border:1px solid rgba(196,70,47,.45);font-size:12.5px;line-height:1.55;color:#F0C4BA;margin-bottom:12px}
@@ -140,6 +149,7 @@ input.salah{border-color:#C4462F}
   <div class="wrap">
     <nav>
       <button data-tab="foto"   aria-selected="true">Foto &amp; media</button>
+      <button data-tab="rundown" aria-selected="false">Rundown</button>
       <button data-tab="teks"   aria-selected="false">Teks</button>
       <button data-tab="ucapan" aria-selected="false">Ucapan</button>
     </nav>
@@ -149,6 +159,21 @@ input.salah{border-color:#C4462F}
         Foto otomatis dikecilkan sampai maksimal 1600px sebelum diunggah, jadi halaman tetap ringan dibuka pakai data seluler.
       </div>
       <div id="daftarFoto"></div>
+    </section>
+
+    <section id="tab-rundown" class="hidden">
+      <div style="font-size:12.5px;line-height:1.6;color:rgba(245,240,230,.55);margin-bottom:14px">
+        Urutan di sini persis urutan yang tampil di halaman. Kolom catatan boleh
+        dikosongkan — barisnya tetap tampil, cuma tanpa keterangan di bawahnya.
+      </div>
+      <div id="daftarRundown"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+        <button id="tambahBaris" class="btn btn-ghost">+ Tambah baris</button>
+        <button id="simpanRundown" class="btn">Simpan rundown</button>
+      </div>
+      <div id="rundownBelumSimpan" class="hint hidden" style="color:#F2B927">
+        Ada perubahan yang belum disimpan.
+      </div>
     </section>
 
     <section id="tab-teks" class="hidden">
@@ -326,7 +351,7 @@ $('#keluar').addEventListener('click', async () => {
 document.querySelectorAll('nav button').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('nav button').forEach(x => x.setAttribute('aria-selected', String(x === b)));
-    ['foto', 'teks', 'ucapan'].forEach(t => $('#tab-' + t).classList.toggle('hidden', t !== b.dataset.tab));
+    ['foto', 'rundown', 'teks', 'ucapan'].forEach(t => $('#tab-' + t).classList.toggle('hidden', t !== b.dataset.tab));
     if (b.dataset.tab === 'ucapan') muatUcapan();
   });
 });
@@ -591,6 +616,132 @@ $('#simpanTeks').addEventListener('click', async () => {
   }
 });
 
+// ---------- rundown ----------
+// Disunting dulu di memori, baru dikirim sekali lewat RPC. Sengaja begitu:
+// menyimpan per-baris berarti kalau koneksi putus di tengah, rundown yang
+// dilihat orang jadi setengah lama setengah baru.
+let rundown = [];
+let rundownBerubah = false;
+
+function tandaiBerubah(v) {
+  rundownBerubah = v;
+  $('#rundownBelumSimpan').classList.toggle('hidden', !v);
+}
+
+async function muatRundown() {
+  rundown = await api('/rest/v1/rundown?select=id,waktu,judul,catatan&order=urutan');
+  tandaiBerubah(false);
+  gambarRundown();
+}
+
+function gambarRundown() {
+  const box = $('#daftarRundown');
+  box.textContent = '';
+
+  if (!rundown.length) {
+    const k = el('div', 'kosong');
+    k.textContent = 'Rundown masih kosong. Tambah baris pertama di bawah.';
+    box.appendChild(k);
+    return;
+  }
+
+  rundown.forEach((r, i) => {
+    const kartu = el('div', 'card');
+    const baris = el('div', 'rd');
+
+    const waktu = el('input');
+    waktu.type = 'text'; waktu.value = r.waktu || ''; waktu.placeholder = '08.00';
+    waktu.maxLength = 12;
+    waktu.addEventListener('input', () => { r.waktu = waktu.value; tandaiBerubah(true); });
+
+    const judul = el('input');
+    judul.type = 'text'; judul.value = r.judul || ''; judul.placeholder = 'Nama acara';
+    judul.maxLength = 80;
+    judul.addEventListener('input', () => { r.judul = judul.value; tandaiBerubah(true); });
+
+    baris.appendChild(waktu); baris.appendChild(judul);
+    kartu.appendChild(baris);
+
+    const catatan = el('input');
+    catatan.type = 'text'; catatan.value = r.catatan || '';
+    catatan.placeholder = 'Keterangan (boleh dikosongkan)';
+    catatan.maxLength = 140;
+    catatan.style.marginTop = '8px';
+    catatan.addEventListener('input', () => { r.catatan = catatan.value; tandaiBerubah(true); });
+    kartu.appendChild(catatan);
+
+    const aksi = el('div', 'rd-aksi');
+    const no = el('div', 'no');
+    no.textContent = String(i + 1).padStart(2, '0');
+    aksi.appendChild(no);
+
+    const geser = (dari, ke) => {
+      const [x] = rundown.splice(dari, 1);
+      rundown.splice(ke, 0, x);
+      tandaiBerubah(true);
+      gambarRundown();
+    };
+
+    const naik = el('button');
+    naik.textContent = '↑'; naik.title = 'Naikkan';
+    naik.disabled = i === 0;
+    naik.addEventListener('click', () => geser(i, i - 1));
+
+    const turun = el('button');
+    turun.textContent = '↓'; turun.title = 'Turunkan';
+    turun.disabled = i === rundown.length - 1;
+    turun.addEventListener('click', () => geser(i, i + 1));
+
+    const hapus = el('button', 'hapus');
+    hapus.textContent = 'Hapus';
+    hapus.addEventListener('click', () => {
+      if (!confirm('Hapus baris "' + (r.judul || r.waktu || '(kosong)') + '"?')) return;
+      rundown.splice(i, 1);
+      tandaiBerubah(true);
+      gambarRundown();
+    });
+
+    aksi.appendChild(naik); aksi.appendChild(turun); aksi.appendChild(hapus);
+    kartu.appendChild(aksi);
+    box.appendChild(kartu);
+  });
+}
+
+$('#tambahBaris').addEventListener('click', () => {
+  rundown.push({ waktu: '', judul: '', catatan: '' });
+  tandaiBerubah(true);
+  gambarRundown();
+  const semua = $('#daftarRundown').querySelectorAll('.rd input');
+  if (semua.length) semua[semua.length - 2].focus();   // fokus ke kolom waktu baris baru
+});
+
+$('#simpanRundown').addEventListener('click', async () => {
+  // Divalidasi di sini juga, bukan cuma mengandalkan check constraint —
+  // pesan "violates check constraint rundown_judul_len" tidak menolong siapa pun.
+  for (let i = 0; i < rundown.length; i++) {
+    const r = rundown[i];
+    if (!(r.waktu || '').trim()) { toast('Baris ' + (i + 1) + ': waktunya belum diisi'); return; }
+    if (!(r.judul || '').trim()) { toast('Baris ' + (i + 1) + ': judulnya belum diisi'); return; }
+  }
+
+  const btn = $('#simpanRundown');
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
+  try {
+    const n = await api('/rest/v1/rpc/simpan_rundown', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_rows: rundown.map(r => ({
+        waktu: (r.waktu || '').trim(), judul: (r.judul || '').trim(), catatan: (r.catatan || '').trim()
+      })) })
+    });
+    await muatRundown();
+    toast(n + ' baris rundown tersimpan');
+  } catch (e) {
+    toast('Gagal: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simpan rundown';
+  }
+});
+
 // ---------- ucapan ----------
 function waktuSingkat(iso) {
   const d = new Date(iso), p = n => String(n).padStart(2, '0');
@@ -671,11 +822,20 @@ async function mulai() {
     $('#login').classList.add('hidden');
     $('#panel').classList.remove('hidden');
     await muatContent();
+    await muatRundown();
   } catch (e) {
     buangSesi();
     tampilLogin(e.message === 'sesi berakhir' ? 'Sesi berakhir. Silakan masuk lagi.' : e.message);
   }
 }
+
+// Suntingan rundown hidup di memori sampai ditekan Simpan, jadi menutup
+// tab tanpa menyimpan berarti hilang. Peringatkan dulu.
+window.addEventListener('beforeunload', (e) => {
+  if (!rundownBerubah && !Object.keys(teksDiubah).length) return;
+  e.preventDefault();
+  e.returnValue = '';
+});
 
 const tersimpan = bacaSesi();
 if (tersimpan && tersimpan.refresh_token) { sesi = tersimpan; mulai(); }

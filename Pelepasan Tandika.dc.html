@@ -172,15 +172,15 @@ textarea{resize:none}
 
 <sc-if value="{{ showRundown }}" hint-placeholder-val="{{ true }}">
 <div data-reveal style="opacity:0;transform:translateY(20px);transition:opacity .8s ease .1s,transform .8s ease .1s;margin-top:24px;padding:18px 16px;border-radius:18px;background:#FBF8F1;border:1px solid rgba(15,27,45,.12)">
-<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:Anton,sans-serif;font-size:19px;text-transform:uppercase;color:#0F1B2D">Rundown</div><div style="padding:4px 9px;border-radius:999px;background:rgba(196,70,47,.12);color:#C4462F;font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.12em">DRAFT</div></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:Anton,sans-serif;font-size:19px;text-transform:uppercase;color:#0F1B2D">Rundown</div><sc-if value="{{ adaRundownStatus }}"><div style="padding:4px 9px;border-radius:999px;background:rgba(196,70,47,.12);color:#C4462F;font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.12em">{{ rundownStatus }}</div></sc-if></div>
 <div style="margin-top:12px">
-<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">08.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Kumpul &amp; sarapan bareng</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Patungan nasi kuning, gelar tikar</div></div></div>
-<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">09.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Sesi kesan &amp; harapan</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Ucapan dari halaman ini dibacakan</div></div></div>
-<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">10.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Games murah meriah</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Hadiah receh, gengsi dipertaruhkan</div></div></div>
-<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">11.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Serah kenang-kenangan</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Plus foto bareng satu bidang</div></div></div>
-<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">12.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Bubar, sampai jumpa di NYC</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Yang mau lanjut, terserah</div></div></div>
+<sc-for list="{{ rundown }}" as="r" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:{{ r.garis }}"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">{{ r.waktu }}</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">{{ r.judul }}</div><sc-if value="{{ r.adaCatatan }}"><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">{{ r.catatan }}</div></sc-if></div></div>
+</sc-for>
 </div>
-<div style="margin-top:10px;font-size:11px;color:rgba(15,27,45,.45)">*Masih draft — kabari kalau ada yang mau digeser.</div>
+<sc-if value="{{ adaRundownCatatan }}">
+<div style="margin-top:10px;font-size:11px;color:rgba(15,27,45,.45)">{{ rundownCatatan }}</div>
+</sc-if>
 </div>
 </sc-if>
 </section>
@@ -297,7 +297,7 @@ textarea{resize:none}
 <div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;padding:0 22px">
 <div style="position:relative;padding:12px;background:#FBF8F1;border:1px solid rgba(15,27,45,.12);border-radius:16px;box-shadow:0 10px 24px rgba(15,27,45,.08)">
 <div style="position:relative;height:150px"><image-slot id="kpa-wide" src="{{ fotoWide }}" style="width:100%;height:150px" shape="rounded" radius="10" placeholder="Foto bareng satu bidang"></image-slot></div>
-<div style="margin-top:10px;display:flex;align-items:baseline;justify-content:space-between;gap:10px"><div style="font-size:12px;font-weight:700;color:#0F1B2D">Bidang KPA, lengkap.</div><div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:rgba(15,27,45,.45)">SEBELUM SATU PERGI</div></div>
+<div style="margin-top:10px;display:flex;align-items:baseline;justify-content:space-between;gap:10px"><div style="font-size:12px;font-weight:700;color:#0F1B2D">{{ galeriWideJudul }}</div><div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:rgba(15,27,45,.45)">{{ galeriWideLabel }}</div></div>
 </div>
 </div>
 </section>
@@ -458,7 +458,18 @@ textarea{resize:none}
 </div></x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#F2B927&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#F2B927&quot;,&quot;#C4462F&quot;,&quot;#1F5F5B&quot;,&quot;#4C6EF5&quot;],&quot;section&quot;:&quot;Tampilan&quot;},&quot;showRundown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;showGift&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;musicEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Interaksi&quot;}}">
 class Component extends DCLogic {
-  state = { coverOn: true, now: Date.now(), wishes: [], fName: '', fMsg: '', att: 'Datang', musicOn: false, torn: false, stamped: false, packed: [], sending: false, offline: false, content: {} };
+  state = { coverOn: true, now: Date.now(), wishes: [], fName: '', fMsg: '', att: 'Datang', musicOn: false, torn: false, stamped: false, packed: [], sending: false, offline: false, content: {}, rundown: null };
+
+  // Cadangan kalau Supabase belum sempat menjawab atau sedang tak terjangkau.
+  // Rundown kosong di halaman acara lebih buruk daripada rundown agak lama,
+  // jadi halaman tidak pernah dibiarkan menampilkan kotak kosong.
+  RUNDOWN_AWAL = [
+    { waktu: '08.00', judul: 'Kumpul & sarapan bareng',    catatan: 'Patungan nasi kuning, gelar tikar' },
+    { waktu: '09.00', judul: 'Sesi kesan & harapan',       catatan: 'Ucapan dari halaman ini dibacakan' },
+    { waktu: '10.00', judul: 'Games murah meriah',         catatan: 'Hadiah receh, gengsi dipertaruhkan' },
+    { waktu: '11.00', judul: 'Serah kenang-kenangan',      catatan: 'Plus foto bareng satu bidang' },
+    { waktu: '12.00', judul: 'Bubar, sampai jumpa di NYC', catatan: 'Yang mau lanjut, terserah' }
+  ];
 
   POS = [[8, 14, -6], [50, 10, 5], [27, 38, -3], [55, 54, 7], [10, 60, 4], [33, 76, -8]];
 
@@ -520,6 +531,13 @@ class Component extends DCLogic {
       .catch(() => {});
   };
 
+  loadRundown = () => {
+    return fetch(this.SB + '/rundown?select=waktu,judul,catatan&order=urutan', { headers: { apikey: this.SB_KEY } })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(rows => { if (Array.isArray(rows) && rows.length) this.setState({ rundown: rows }); })
+      .catch(() => {});
+  };
+
   // Ambil semua ucapan. owner_token sengaja tidak diminta — memang tidak
   // di-grant ke publik, jadi 'select=*' akan ditolak server.
   loadWishes = () => {
@@ -537,6 +555,7 @@ class Component extends DCLogic {
   componentDidMount() {
     this.applyAccent();
     this.loadContent();
+    this.loadRundown();
     this.loadWishes();
     // Polling ringan supaya ucapan yang masuk dari HP lain ikut muncul
     // saat sesi 09.00 tanpa perlu refresh. Berhenti kalau tab disembunyikan.
@@ -547,9 +566,9 @@ class Component extends DCLogic {
       // Konten jauh lebih jarang berubah daripada ucapan, tapi tetap perlu
       // ikut tersegarkan — kalau foto diunggah lewat panel admin saat acara
       // berjalan, layar yang sudah terbuka ikut berubah tanpa perlu refresh.
-      if (++this.tick % 6 === 0) this.loadContent();
+      if (++this.tick % 6 === 0) { this.loadContent(); this.loadRundown(); }
     }, 8000);
-    this.onVis = () => { if (!document.hidden) { this.loadWishes(); this.loadContent(); } };
+    this.onVis = () => { if (!document.hidden) { this.loadWishes(); this.loadContent(); this.loadRundown(); } };
     document.addEventListener('visibilitychange', this.onVis);
     try {
       const p = new URLSearchParams(location.search).get('from');
@@ -931,7 +950,31 @@ class Component extends DCLogic {
       rekMasihContoh: !rekNomor,
 
       bio: c('teks.profil.bio', 'Kawan sebidang kita segera terbang ke New York untuk lanjut studi. Sebelum berangkat, kami satu bidang nitip kesan, harapan, dan doa di kartu ini.'),
-      catatanJam: c('teks.profil.catatan', 'beda 11 jam — inget itu pas nanti janjian nelpon')
+      catatanJam: c('teks.profil.catatan', 'beda 11 jam — inget itu pas nanti janjian nelpon'),
+
+      galeriWideJudul: c('teks.galeri.wide.judul', 'Koleksi terbaik satu bidang.'),
+      galeriWideLabel: c('teks.galeri.wide.label', 'TOP COLLECTION'),
+
+      // dikosongkan lewat panel = elemennya hilang, bukan jadi kotak kosong
+      rundownStatus: c('teks.rundown.status', ''),
+      adaRundownStatus: !!c('teks.rundown.status', ''),
+      rundownCatatan: c('teks.rundown.catatan', ''),
+      adaRundownCatatan: !!c('teks.rundown.catatan', ''),
+
+      ...this.rundownVals()
+    };
+  }
+
+  rundownVals() {
+    const rows = this.state.rundown || this.RUNDOWN_AWAL;
+    return {
+      adaRundown: rows.length > 0,
+      rundown: rows.map((r, i) => ({
+        waktu: r.waktu, judul: r.judul, catatan: r.catatan || '',
+        adaCatatan: !!(r.catatan || '').trim(),
+        // baris terakhir tanpa garis bawah, seperti versi tulis-tangannya dulu
+        garis: i === rows.length - 1 ? 'none' : '1px dashed rgba(15,27,45,.14)'
+      }))
     };
   }
 
