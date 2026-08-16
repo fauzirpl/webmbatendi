@@ -18,7 +18,8 @@ menambah bagian yang bisa rusak tanpa keuntungan setimpal.
 
 ```
 Pelepasan Tandika.dc.html   halaman (sumber kebenaran, nama sengaja dipertahankan)
-admin.html                  panel admin — foto, teks, moderasi ucapan
+admin.html                  panel admin — foto, teks, rundown, moderasi ucapan
+db/schema.sql               skema Supabase lengkap + alasan di balik keputusannya
 support.js                  runtime .dc.html
 image-slot.js               web component slot foto
 assets/                     cadangan stiker + musik (opsional — lihat catatan)
@@ -142,6 +143,13 @@ dan pakai `{{ namaNilai }}` di tempat yang diinginkan.
 
 Projek Supabase: `pelepasan-tandika` (`djzzayvisldfuczhqmjb`),
 region ap-southeast-1 (Singapura), free tier, $0/bulan.
+
+Skema lengkapnya ada di [`db/schema.sql`](db/schema.sql) — bisa dijalankan
+sekali jalan di projek Supabase kosong untuk membangun ulang seluruh backend.
+Berkas itu juga tempat mencatat alasan keputusan yang tidak kelihatan dari
+kodenya, termasuk kenapa `DELETE` di `simpan_rundown()` ditulis dengan bentuk
+subquery yang kelihatan berlebihan (jangan disederhanakan — penjelasannya ada
+di sana).
 
 Tabelnya: `wishes` (ucapan), `content` (foto & teks yang bisa diedit),
 `rundown` (susunan acara), `admins` (daftar putih pengelola), plus bucket
