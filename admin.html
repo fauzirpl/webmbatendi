@@ -62,7 +62,23 @@ textarea{min-height:92px;line-height:1.6;resize:vertical}
 #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);padding:11px 18px;border-radius:999px;background:#F2B927;color:#0F1B2D;font-size:12.5px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:50;max-width:88vw;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 
-.login{max-width:380px;margin:14vh auto 0;padding:0 18px}
+/* Tombol lihat/sembunyi sandi ditumpuk di dalam kolomnya. padding-right
+   pada input mencegah teks sandi menyelinap ke bawah tombol. */
+.sandi-baris{position:relative}
+.sandi-baris input{padding-right:62px}
+.sandi-baris button{position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  padding:7px 11px;border:none;border-radius:8px;background:rgba(245,240,230,.1);
+  color:rgba(245,240,230,.7);font-size:11.5px;font-weight:700;cursor:pointer}
+.sandi-baris button:hover{background:rgba(245,240,230,.18);color:#F5F0E6}
+.sandi-baris button[aria-pressed="true"]{background:rgba(242,185,39,.9);color:#0F1B2D}
+
+/* Kolom yang ditolak: ditandai, bukan cuma dibiarkan diam */
+input.salah{border-color:#C4462F}
+
+/* 14vh enak di laptop tapi kejauhan di HP waktu keyboard terbuka —
+   svh mengikuti tinggi layar yang benar-benar terpakai. */
+.login{max-width:380px;margin:8vh auto 0;padding:0 18px 32px}
+@media (min-height:700px){ .login{margin-top:12vh} }
 .login .card{padding:22px}
 .hidden{display:none}
 </style>
@@ -78,13 +94,22 @@ textarea{min-height:92px;line-height:1.6;resize:vertical}
   </div>
   <div class="card">
     <div id="loginErr" class="err hidden"></div>
-    <form id="loginForm">
+    <form id="loginForm" novalidate>
       <label class="lbl" for="em">Email</label>
-      <input id="em" type="text" autocomplete="username" inputmode="email">
+      <input id="em" type="email" autocomplete="username" inputmode="email"
+             autocapitalize="none" autocorrect="off" spellcheck="false" autofocus>
+
       <label class="lbl" for="pw" style="margin-top:14px">Kata sandi</label>
-      <input id="pw" type="password" autocomplete="current-password">
+      <div class="sandi-baris">
+        <input id="pw" type="password" autocomplete="current-password" enterkeyhint="go">
+        <button type="button" id="lihatSandi" aria-label="Tampilkan kata sandi" aria-pressed="false">Lihat</button>
+      </div>
+
       <button id="loginBtn" class="btn" style="width:100%;margin-top:18px">Masuk</button>
     </form>
+  </div>
+  <div style="margin-top:16px;text-align:center">
+    <a href="/" style="font-size:12px;color:rgba(245,240,230,.45);text-decoration:none">← kembali ke kartu pelepasan</a>
   </div>
 </div>
 
@@ -215,13 +240,32 @@ function tampilLogin(pesan) {
   const e = $('#loginErr');
   if (pesan) { e.textContent = pesan; e.classList.remove('hidden'); }
   else e.classList.add('hidden');
+
+  // Atribut autofocus di HTML tidak berlaku di sini: waktu halaman dimuat,
+  // kolomnya masih di dalam div display:none, jadi tidak pernah dapat fokus.
+  // Dipasang di sini, setelah div-nya benar-benar tampil.
+  // Hanya kalau email masih kosong — supaya tidak merebut fokus dari
+  // pemanggil yang sengaja mengarahkan ke kolom sandi.
+  if (!$('#em').value) $('#em').focus();
 }
 
 $('#loginForm').addEventListener('submit', async (ev) => {
   ev.preventDefault();
   const btn = $('#loginBtn');
   const email = $('#em').value.trim(), sandi = $('#pw').value;
-  if (!email || !sandi) { return; }
+
+  // Dulu ini cuma `return` diam-diam: tombolnya ditekan, tidak terjadi apa
+  // pun, dan tidak ada petunjuk kenapa. Sekarang selalu ada jawaban.
+  $('#em').classList.toggle('salah', !email);
+  $('#pw').classList.toggle('salah', !sandi);
+  if (!email || !sandi) {
+    tampilLogin(!email && !sandi ? 'Email dan kata sandi masih kosong.'
+              : !email          ? 'Emailnya belum diisi.'
+                                : 'Kata sandinya belum diisi.');
+    (!email ? $('#em') : $('#pw')).focus();
+    return;
+  }
+
   btn.disabled = true; btn.textContent = 'Memeriksa…';
   try {
     const r = await fetch(SB + '/auth/v1/token?grant_type=password', {
@@ -232,7 +276,12 @@ $('#loginForm').addEventListener('submit', async (ev) => {
     const d = await r.json();
     if (!r.ok) throw new Error(pesanAuth(d.error_description || d.msg || d.message || d.error));
     simpanSesi({ access_token: d.access_token, refresh_token: d.refresh_token, expires_at: Date.now() + d.expires_in * 1000 });
+    // kosongkan dan kembalikan ke tersembunyi — kalau tadi ditoggle "Lihat",
+    // jangan tinggalkan kolom sandi dalam keadaan terbuka
     $('#pw').value = '';
+    $('#pw').type = 'password';
+    $('#lihatSandi').textContent = 'Lihat';
+    $('#lihatSandi').setAttribute('aria-pressed', 'false');
     await mulai();
   } catch (e) {
     tampilLogin(e.message);
@@ -240,6 +289,20 @@ $('#loginForm').addEventListener('submit', async (ev) => {
     btn.disabled = false; btn.textContent = 'Masuk';
   }
 });
+
+// Salah ketik sandi di HP tidak kelihatan sama sekali; ini jalan keluarnya.
+$('#lihatSandi').addEventListener('click', () => {
+  const pw = $('#pw'), b = $('#lihatSandi');
+  const tampil = pw.type === 'password';
+  pw.type = tampil ? 'text' : 'password';
+  b.textContent = tampil ? 'Tutup' : 'Lihat';
+  b.setAttribute('aria-pressed', String(tampil));
+  b.setAttribute('aria-label', tampil ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+  pw.focus();
+});
+
+// Tanda merah hilang begitu kolomnya mulai diisi
+['#em', '#pw'].forEach(s => $(s).addEventListener('input', () => $(s).classList.remove('salah')));
 
 $('#keluar').addEventListener('click', async () => {
   try { await api('/auth/v1/logout', { method: 'POST' }); } catch (e) {}
