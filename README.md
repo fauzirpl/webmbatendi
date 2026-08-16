@@ -35,16 +35,33 @@ node build.js && node serve.js
 
 Buka http://localhost:4321
 
-## Deploy ke Vercel
+## Deploy
+
+Repo ini tersambung ke Vercel, jadi **deploy jalan sendiri**: setiap push ke
+`main` masuk ke production di https://webmbatendi.vercel.app
 
 ```bash
-npx vercel --prod
+git push
 ```
+
+Push ke branch lain menghasilkan preview. Preview dikunci di balik login
+Vercel (Deployment Protection) — itu bawaan dan memang diinginkan; yang
+terbuka untuk umum hanya production.
 
 `vercel.json` sudah mengatur `buildCommand: node build.js` dan
 `outputDirectory: dist`. Tidak ada dependency, jadi install step-nya kosong.
 Tidak ada environment variable yang perlu diisi — publishable key Supabase
 memang aman berada di kode klien (lihat bagian keamanan).
+
+Kalau perlu deploy manual tanpa lewat git:
+
+```bash
+npx vercel --prod
+```
+
+**Yang tidak perlu deploy sama sekali:** foto, stiker, teks, musik, dan
+moderasi ucapan. Semuanya lewat panel admin dan langsung tersimpan di
+Supabase. Deploy hanya perlu kalau kodenya yang berubah.
 
 ## Panel admin
 
