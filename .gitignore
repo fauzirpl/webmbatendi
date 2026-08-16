@@ -1,0 +1,9 @@
+# hasil build, dibangun ulang lewat `node build.js`
+dist/
+
+# tautan projek Vercel (berisi id projek, khusus mesin ini)
+.vercel/
+
+node_modules/
+.DS_Store
+Thumbs.db

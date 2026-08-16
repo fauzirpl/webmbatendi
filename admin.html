@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel Admin · Pelepasan Tandika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0B1523;color:#F5F0E6;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Anton,sans-serif;text-transform:uppercase;font-weight:400;letter-spacing:.01em;margin:0}
+input,button,textarea,select{font-family:inherit}
+.mono{font-family:'Space Mono',monospace;letter-spacing:.14em;font-size:8.5px;text-transform:uppercase;color:rgba(245,240,230,.5)}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px 80px}
+
+header{position:sticky;top:0;z-index:10;background:rgba(11,21,35,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(245,240,230,.12)}
+.hd{max-width:760px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hd h1{font-size:20px}
+
+nav{display:flex;gap:6px;margin:18px 0 22px;flex-wrap:wrap}
+nav button{padding:9px 15px;border:1px solid rgba(245,240,230,.18);border-radius:999px;background:transparent;color:rgba(245,240,230,.62);font-size:12.5px;font-weight:600;cursor:pointer}
+nav button[aria-selected="true"]{background:#F2B927;border-color:#F2B927;color:#0F1B2D;font-weight:800}
+
+.card{padding:16px;border-radius:16px;background:rgba(245,240,230,.05);border:1px solid rgba(245,240,230,.12);margin-bottom:12px}
+.grup{margin:26px 0 10px}
+.grup h2{font-size:15px;color:rgba(245,240,230,.9)}
+
+label{display:block}
+.lbl{font-size:13px;font-weight:700;color:#F5F0E6;margin-bottom:7px}
+input[type=text],textarea{width:100%;padding:12px 13px;border:1px solid rgba(245,240,230,.18);border-radius:11px;background:rgba(11,21,35,.55);color:#F5F0E6;font-size:14px;outline:none}
+input[type=text]:focus,textarea:focus{border-color:#F2B927}
+textarea{min-height:92px;line-height:1.6;resize:vertical}
+
+.btn{padding:12px 18px;border:none;border-radius:11px;background:#F2B927;color:#0F1B2D;font-size:13.5px;font-weight:800;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}
+.btn-ghost{background:transparent;border:1px solid rgba(245,240,230,.22);color:rgba(245,240,230,.75);font-weight:600}
+.btn-danger{background:transparent;border:1px solid rgba(196,70,47,.5);color:#E08571;font-weight:600}
+.btn-sm{padding:7px 13px;font-size:11.5px;border-radius:999px}
+
+.foto{display:flex;gap:14px;align-items:flex-start}
+.thumb{flex:none;width:96px;height:96px;border-radius:12px;background:rgba(11,21,35,.6);border:1px dashed rgba(245,240,230,.25);display:flex;align-items:center;justify-content:center;overflow:hidden}
+/* contain, bukan cover: pratinjau ini gunanya memastikan "gambarnya sudah
+   benar belum", jadi jangan ada yang terpotong. Penting buat stiker. */
+.thumb img{width:100%;height:100%;object-fit:contain}
+.thumb span{font-size:9.5px;color:rgba(245,240,230,.35);text-align:center;padding:6px;line-height:1.4}
+
+.ucapan{padding:14px 15px;border-radius:13px;background:#F5F0E6;color:#0F1B2D;margin-bottom:9px}
+.ucapan .atas{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.ucapan .nm{font-size:13.5px;font-weight:700}
+.ucapan .wkt{font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.1em;color:rgba(15,27,45,.45)}
+.ucapan .ms{margin-top:8px;font-size:13px;line-height:1.6;color:rgba(15,27,45,.82);white-space:pre-wrap;overflow-wrap:anywhere}
+.ucapan .bwh{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pil{padding:3px 9px;border-radius:999px;background:rgba(15,27,45,.08);font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em}
+
+.kosong{padding:28px 18px;text-align:center;border:1px dashed rgba(245,240,230,.2);border-radius:14px;color:rgba(245,240,230,.5);font-size:13px}
+.hint{font-size:11.5px;line-height:1.6;color:rgba(245,240,230,.45);margin-top:8px}
+.err{padding:11px 13px;border-radius:10px;background:rgba(196,70,47,.16);border:1px solid rgba(196,70,47,.45);font-size:12.5px;line-height:1.55;color:#F0C4BA;margin-bottom:12px}
+
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);padding:11px 18px;border-radius:999px;background:#F2B927;color:#0F1B2D;font-size:12.5px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:50;max-width:88vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+.login{max-width:380px;margin:14vh auto 0;padding:0 18px}
+.login .card{padding:22px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login" class="login hidden">
+  <div style="text-align:center;margin-bottom:18px">
+    <div class="mono">BIDANG KPA</div>
+    <h1 style="font-size:27px;margin-top:7px">Panel Admin</h1>
+    <div style="font-size:12.5px;color:rgba(245,240,230,.5);margin-top:6px">Pelepasan Tandika</div>
+  </div>
+  <div class="card">
+    <div id="loginErr" class="err hidden"></div>
+    <form id="loginForm">
+      <label class="lbl" for="em">Email</label>
+      <input id="em" type="text" autocomplete="username" inputmode="email">
+      <label class="lbl" for="pw" style="margin-top:14px">Kata sandi</label>
+      <input id="pw" type="password" autocomplete="current-password">
+      <button id="loginBtn" class="btn" style="width:100%;margin-top:18px">Masuk</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= PANEL ================= -->
+<div id="panel" class="hidden">
+  <header>
+    <div class="hd">
+      <div>
+        <h1>Panel Admin</h1>
+        <div class="mono" style="margin-top:3px">PELEPASAN TANDIKA</div>
+      </div>
+      <button id="keluar" class="btn btn-ghost btn-sm">Keluar</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <nav>
+      <button data-tab="foto"   aria-selected="true">Foto &amp; media</button>
+      <button data-tab="teks"   aria-selected="false">Teks</button>
+      <button data-tab="ucapan" aria-selected="false">Ucapan</button>
+    </nav>
+
+    <section id="tab-foto">
+      <div style="font-size:12.5px;line-height:1.6;color:rgba(245,240,230,.55);margin-bottom:14px">
+        Foto otomatis dikecilkan sampai maksimal 1600px sebelum diunggah, jadi halaman tetap ringan dibuka pakai data seluler.
+      </div>
+      <div id="daftarFoto"></div>
+    </section>
+
+    <section id="tab-teks" class="hidden">
+      <div id="daftarTeks"></div>
+      <button id="simpanTeks" class="btn" style="margin-top:6px">Simpan perubahan</button>
+    </section>
+
+    <section id="tab-ucapan" class="hidden">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px">
+        <div id="ringkasUcapan" style="font-size:12.5px;color:rgba(245,240,230,.55)">Memuat…</div>
+        <button id="muatUcapan" class="btn btn-ghost btn-sm">Muat ulang</button>
+      </div>
+      <div id="daftarUcapan"></div>
+    </section>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+
+const SB  = 'https://djzzayvisldfuczhqmjb.supabase.co';
+const KEY = 'sb_publishable_wUaCUiEJPdZ1ahVAX-6cUQ_-BbooIiz';
+const SESI = 'tandika_admin_sesi';
+
+let sesi = null;      // { access_token, refresh_token, expires_at }
+let content = [];     // baris tabel content
+const teksDiubah = {};
+
+// ---------- utilitas ----------
+const $ = s => document.querySelector(s);
+const el = (tag, cls) => { const n = document.createElement(tag); if (cls) n.className = cls; return n; };
+
+let toastT;
+function toast(pesan) {
+  const t = $('#toast');
+  t.textContent = pesan;
+  t.classList.add('on');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+function simpanSesi(s) {
+  sesi = s;
+  try { localStorage.setItem(SESI, JSON.stringify(s)); } catch (e) {}
+}
+function buangSesi() {
+  sesi = null;
+  try { localStorage.removeItem(SESI); } catch (e) {}
+}
+function bacaSesi() {
+  try { return JSON.parse(localStorage.getItem(SESI)); } catch (e) { return null; }
+}
+
+// Token Supabase hidup 1 jam. Diperbarui otomatis kalau tinggal <60 detik,
+// supaya sesi tidak putus di tengah unggahan.
+async function tokenSegar() {
+  if (!sesi) throw new Error('belum masuk');
+  if (sesi.expires_at - Date.now() > 60000) return sesi.access_token;
+  const r = await fetch(SB + '/auth/v1/token?grant_type=refresh_token', {
+    method: 'POST',
+    headers: { apikey: KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: sesi.refresh_token })
+  });
+  if (!r.ok) { buangSesi(); tampilLogin('Sesi berakhir. Silakan masuk lagi.'); throw new Error('sesi berakhir'); }
+  const d = await r.json();
+  simpanSesi({ access_token: d.access_token, refresh_token: d.refresh_token, expires_at: Date.now() + d.expires_in * 1000 });
+  return sesi.access_token;
+}
+
+async function api(jalur, opsi = {}) {
+  const tok = await tokenSegar();
+  const h = Object.assign({ apikey: KEY, Authorization: 'Bearer ' + tok }, opsi.headers || {});
+  const r = await fetch(SB + jalur, Object.assign({}, opsi, { headers: h }));
+  if (!r.ok) {
+    let pesan = 'HTTP ' + r.status;
+    try { const j = await r.json(); pesan = j.message || j.error || pesan; } catch (e) {}
+    throw new Error(pesan);
+  }
+  return r.status === 204 ? null : r.json().catch(() => null);
+}
+
+// Supabase menjawab dalam bahasa Inggris; sisa panel ini bahasa Indonesia,
+// jadi yang sering muncul diterjemahkan biar tidak terasa setengah jadi.
+function pesanAuth(asli) {
+  const s = String(asli || '').toLowerCase();
+  if (s.includes('invalid login credentials')) return 'Email atau kata sandi salah.';
+  if (s.includes('email not confirmed'))       return 'Email ini belum dikonfirmasi. Konfirmasi dulu lewat dashboard Supabase, atau matikan "Confirm email" di pengaturan Authentication.';
+  if (s.includes('too many requests') || s.includes('rate limit')) return 'Terlalu sering mencoba. Tunggu sebentar, lalu coba lagi.';
+  if (s.includes('user not found'))            return 'Akun dengan email ini belum ada.';
+  if (s.includes('failed to fetch') || s.includes('networkerror')) return 'Tidak bisa menghubungi server. Cek koneksi internet.';
+  return asli || 'Gagal masuk.';
+}
+
+// ---------- masuk / keluar ----------
+function tampilLogin(pesan) {
+  $('#panel').classList.add('hidden');
+  $('#login').classList.remove('hidden');
+  const e = $('#loginErr');
+  if (pesan) { e.textContent = pesan; e.classList.remove('hidden'); }
+  else e.classList.add('hidden');
+}
+
+$('#loginForm').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const btn = $('#loginBtn');
+  const email = $('#em').value.trim(), sandi = $('#pw').value;
+  if (!email || !sandi) { return; }
+  btn.disabled = true; btn.textContent = 'Memeriksa…';
+  try {
+    const r = await fetch(SB + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: sandi })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(pesanAuth(d.error_description || d.msg || d.message || d.error));
+    simpanSesi({ access_token: d.access_token, refresh_token: d.refresh_token, expires_at: Date.now() + d.expires_in * 1000 });
+    $('#pw').value = '';
+    await mulai();
+  } catch (e) {
+    tampilLogin(e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Masuk';
+  }
+});
+
+$('#keluar').addEventListener('click', async () => {
+  try { await api('/auth/v1/logout', { method: 'POST' }); } catch (e) {}
+  buangSesi();
+  tampilLogin();
+});
+
+// ---------- tab ----------
+document.querySelectorAll('nav button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+    ['foto', 'teks', 'ucapan'].forEach(t => $('#tab-' + t).classList.toggle('hidden', t !== b.dataset.tab));
+    if (b.dataset.tab === 'ucapan') muatUcapan();
+  });
+});
+
+// ---------- konten ----------
+async function muatContent() {
+  content = await api('/rest/v1/content?select=key,value,label,kind,grp,urutan&order=grp,urutan');
+  gambarFoto();
+  gambarTeks();
+}
+
+function urlFoto(nama) { return SB + '/storage/v1/object/public/foto/' + nama; }
+
+function gambarFoto() {
+  const box = $('#daftarFoto');
+  box.textContent = '';
+
+  // dikelompokkan per grp (Foto / Stiker / Musik) — 18 baris kalau
+  // ditumpuk jadi satu daftar terlalu susah dicari
+  const grup = {};
+  content.filter(c => c.kind === 'foto' || c.kind === 'audio')
+         .forEach(c => { (grup[c.grp] = grup[c.grp] || []).push(c); });
+
+  Object.keys(grup).forEach(nama => {
+    const h = el('div', 'grup');
+    const j = el('h2');
+    j.textContent = nama;
+    h.appendChild(j);
+    box.appendChild(h);
+
+    if (nama === 'Stiker') {
+      const ket = el('div', 'hint');
+      ket.style.marginBottom = '10px';
+      ket.textContent = 'Selama belum diunggah, halaman memakai berkas di assets/. Kalau di sana juga belum ada, stikernya disembunyikan — tidak muncul ikon gambar rusak.';
+      box.appendChild(ket);
+    }
+
+    grup[nama].forEach(c => box.appendChild(kartuMedia(c)));
+  });
+}
+
+function kartuMedia(c) {
+  const audio = c.kind === 'audio';
+  const kartu = el('div', 'card');
+  const baris = el('div', 'foto');
+
+  const th = el('div', 'thumb');
+  if (audio) {
+    const s = el('span');
+    s.textContent = c.value ? '♪ terisi' : '♪ belum ada';
+    th.appendChild(s);
+  } else if (c.value) {
+    const im = el('img'); im.src = c.value; im.alt = ''; th.appendChild(im);
+  } else {
+    const s = el('span'); s.textContent = 'belum ada'; th.appendChild(s);
+  }
+
+  const kanan = el('div');
+  kanan.style.flex = '1';
+  kanan.style.minWidth = '0';
+
+  const lbl = el('div', 'lbl');
+  lbl.textContent = c.label;                 // textContent, bukan innerHTML
+  kanan.appendChild(lbl);
+
+  if (audio && c.value) {
+    const au = el('audio');
+    au.controls = true;
+    au.src = c.value;
+    au.style.width = '100%';
+    au.style.marginBottom = '10px';
+    kanan.appendChild(au);
+  }
+
+  const inp = el('input');
+  inp.type = 'file';
+  inp.accept = audio ? 'audio/mpeg,audio/mp4,audio/ogg,audio/wav'
+                     : 'image/jpeg,image/png,image/webp,image/gif';
+  inp.style.fontSize = '12px';
+  inp.style.color = 'rgba(245,240,230,.6)';
+  inp.style.maxWidth = '100%';
+  inp.addEventListener('change', () => { if (inp.files[0]) unggah(c, inp.files[0], kartu); });
+  kanan.appendChild(inp);
+
+  if (c.value) {
+    const hapus = el('button', 'btn btn-danger btn-sm');
+    hapus.textContent = 'Kosongkan';
+    hapus.style.marginTop = '10px';
+    hapus.addEventListener('click', () => kosongkanFoto(c));
+    kanan.appendChild(hapus);
+  }
+
+  baris.appendChild(th);
+  baris.appendChild(kanan);
+  kartu.appendChild(baris);
+  return kartu;
+}
+
+// Foto dari HP biasanya 3–5 MB. Dikecilkan dulu di browser supaya unggahan
+// cepat dan halaman acara tidak berat dibuka ramai-ramai pakai data seluler.
+//
+// Format keluaran mengikuti format masukan, BUKAN selalu JPEG: stiker itu
+// PNG berlatar bening, dan JPEG tidak punya kanal alpha sama sekali —
+// memaksakannya bikin latar bening berubah jadi kotak hitam.
+function kecilkan(file, maksPx) {
+  return new Promise((selesai, gagal) => {
+    if (file.type === 'image/gif') { selesai(file); return; }  // GIF: biarkan, animasinya hilang kalau di-canvas
+
+    const punyaAlpha = file.type === 'image/png' || file.type === 'image/webp';
+    const tipeKeluar = punyaAlpha ? file.type : 'image/jpeg';
+    const mutu = file.type === 'image/webp' ? 0.9 : 0.86;   // diabaikan untuk PNG
+
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const skala = Math.min(1, maksPx / Math.max(img.width, img.height));
+      // sudah cukup kecil dan tidak perlu diperkecil: kirim apa adanya
+      if (skala === 1 && file.size < 900000) { selesai(file); return; }
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * skala);
+      c.height = Math.round(img.height * skala);
+      const ctx = c.getContext('2d');
+      // JPEG tidak bisa bening, jadi diberi alas putih supaya bagian
+      // transparan tidak jadi hitam kalau ada gambar ber-alpha yang lolos
+      if (!punyaAlpha) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, c.width, c.height); }
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => selesai(b || file), tipeKeluar, mutu);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); gagal(new Error('Berkas ini bukan gambar yang bisa dibaca')); };
+    img.src = url;
+  });
+}
+
+async function unggah(baris, file, kartu) {
+  const tombol = kartu.querySelectorAll('input,button');
+  tombol.forEach(t => t.disabled = true);
+  toast('Mengunggah…');
+  try {
+    const audio = baris.kind === 'audio';
+
+    // Audio tidak lewat canvas — tidak ada yang perlu dikecilkan, dan
+    // memaksanya lewat sana justru merusak berkasnya.
+    const kecil = audio ? file : await kecilkan(file, 1600);
+
+    if (kecil.size > 12 * 1024 * 1024) {
+      throw new Error('Berkasnya ' + Math.round(kecil.size / 1048576) + ' MB, batasnya 12 MB.');
+    }
+
+    const ext = audio
+      ? ((file.name.split('.').pop() || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp3')
+      : kecil.type === 'image/png'  ? 'png'
+      : kecil.type === 'image/webp' ? 'webp'
+      : kecil.type === 'image/gif'  ? 'gif' : 'jpg';
+    const nama = baris.key.replace(/[^a-z0-9-]/gi, '_') + '-' + Date.now() + '.' + ext;
+
+    await api('/storage/v1/object/foto/' + nama, {
+      method: 'POST',
+      headers: { 'Content-Type': kecil.type || (audio ? 'audio/mpeg' : 'image/jpeg'), 'x-upsert': 'true' },
+      body: kecil
+    });
+
+    const lama = baris.value;
+    await api('/rest/v1/content?key=eq.' + encodeURIComponent(baris.key), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ value: urlFoto(nama) })
+    });
+
+    // buang berkas lama biar kuota tidak habis oleh versi yang sudah diganti
+    if (lama && lama.indexOf('/foto/') !== -1) {
+      const namaLama = lama.split('/foto/')[1];
+      if (namaLama) { try { await api('/storage/v1/object/foto/' + namaLama, { method: 'DELETE' }); } catch (e) {} }
+    }
+
+    baris.value = urlFoto(nama);
+    gambarFoto();
+    toast('Tersimpan');
+  } catch (e) {
+    toast('Gagal: ' + e.message);
+    tombol.forEach(t => t.disabled = false);
+  }
+}
+
+async function kosongkanFoto(baris) {
+  if (!confirm('Kosongkan "' + baris.label + '"? Halaman akan kembali memakai berkas cadangan di assets/, atau menyembunyikannya kalau di sana juga tidak ada.')) return;
+  try {
+    const lama = baris.value;
+    await api('/rest/v1/content?key=eq.' + encodeURIComponent(baris.key), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ value: '' })
+    });
+    if (lama && lama.indexOf('/foto/') !== -1) {
+      const namaLama = lama.split('/foto/')[1];
+      if (namaLama) { try { await api('/storage/v1/object/foto/' + namaLama, { method: 'DELETE' }); } catch (e) {} }
+    }
+    baris.value = '';
+    gambarFoto();
+    toast('Foto dikosongkan');
+  } catch (e) { toast('Gagal: ' + e.message); }
+}
+
+function gambarTeks() {
+  const box = $('#daftarTeks');
+  box.textContent = '';
+  const grup = {};
+  content.filter(c => c.kind === 'teks').forEach(c => { (grup[c.grp] = grup[c.grp] || []).push(c); });
+
+  Object.keys(grup).forEach(nama => {
+    const h = el('div', 'grup');
+    const j = el('h2');
+    j.textContent = nama;
+    h.appendChild(j);
+    box.appendChild(h);
+
+    grup[nama].forEach(c => {
+      const kartu = el('div', 'card');
+      const lbl = el('div', 'lbl');
+      lbl.textContent = c.label;
+      kartu.appendChild(lbl);
+
+      const panjang = (c.value || '').length > 90;
+      const inp = el(panjang ? 'textarea' : 'input');
+      if (!panjang) inp.type = 'text';
+      inp.value = c.value || '';
+      inp.addEventListener('input', () => { teksDiubah[c.key] = inp.value; });
+      kartu.appendChild(inp);
+
+      if (c.key === 'teks.rekening.nomor') {
+        const t = el('div', 'hint');
+        t.textContent = 'Selama ini masih kosong, halaman menampilkan nomor contoh beserta catatan peringatannya. Catatan itu hilang sendiri begitu nomor asli diisi.';
+        kartu.appendChild(t);
+      }
+      box.appendChild(kartu);
+    });
+  });
+}
+
+$('#simpanTeks').addEventListener('click', async () => {
+  const kunci = Object.keys(teksDiubah);
+  if (!kunci.length) { toast('Tidak ada yang berubah'); return; }
+  const btn = $('#simpanTeks');
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
+  try {
+    for (const k of kunci) {
+      await api('/rest/v1/content?key=eq.' + encodeURIComponent(k), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: teksDiubah[k] })
+      });
+      const b = content.find(c => c.key === k);
+      if (b) b.value = teksDiubah[k];
+      delete teksDiubah[k];
+    }
+    gambarTeks();
+    toast(kunci.length + ' teks tersimpan');
+  } catch (e) {
+    toast('Gagal: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simpan perubahan';
+  }
+});
+
+// ---------- ucapan ----------
+function waktuSingkat(iso) {
+  const d = new Date(iso), p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' · ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+async function muatUcapan() {
+  const box = $('#daftarUcapan'), ring = $('#ringkasUcapan');
+  ring.textContent = 'Memuat…';
+  try {
+    const rows = await api('/rest/v1/wishes?select=id,name,msg,att,created_at&order=created_at.desc');
+    box.textContent = '';
+    const hadir = rows.filter(r => r.att === 'Datang').length;
+    ring.textContent = rows.length + ' ucapan · ' + hadir + ' datang · ' + (rows.length - hadir) + ' absen';
+
+    if (!rows.length) {
+      const k = el('div', 'kosong');
+      k.textContent = 'Belum ada ucapan yang masuk.';
+      box.appendChild(k);
+      return;
+    }
+
+    rows.forEach(w => {
+      const kartu = el('div', 'ucapan');
+      const atas = el('div', 'atas');
+      const nm = el('div', 'nm');
+      nm.textContent = w.name;                 // textContent: isi tulisan orang, jangan pernah di-innerHTML
+      const wkt = el('div', 'wkt');
+      wkt.textContent = waktuSingkat(w.created_at);
+      atas.appendChild(nm); atas.appendChild(wkt);
+
+      const ms = el('div', 'ms');
+      ms.textContent = w.msg;
+      const bwh = el('div', 'bwh');
+      const pil = el('div', 'pil');
+      pil.textContent = w.att;
+      const hps = el('button', 'btn btn-danger btn-sm');
+      hps.textContent = 'Hapus';
+      hps.addEventListener('click', () => hapusUcapan(w, hps));
+      bwh.appendChild(pil); bwh.appendChild(hps);
+
+      kartu.appendChild(atas); kartu.appendChild(ms); kartu.appendChild(bwh);
+      box.appendChild(kartu);
+    });
+  } catch (e) {
+    ring.textContent = 'Gagal memuat: ' + e.message;
+  }
+}
+
+async function hapusUcapan(w, btn) {
+  if (!confirm('Hapus ucapan dari "' + w.name + '"? Tidak bisa dikembalikan.')) return;
+  btn.disabled = true; btn.textContent = 'Menghapus…';
+  try {
+    await api('/rest/v1/wishes?id=eq.' + w.id, { method: 'DELETE' });
+    toast('Ucapan dihapus');
+    muatUcapan();
+  } catch (e) {
+    toast('Gagal: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Hapus';
+  }
+}
+
+$('#muatUcapan').addEventListener('click', muatUcapan);
+
+// ---------- mulai ----------
+async function mulai() {
+  try {
+    // is_admin() dicek di server. Akun yang berhasil masuk tapi belum
+    // terdaftar sebagai admin tetap tidak bisa mengubah apa pun.
+    const boleh = await api('/rest/v1/rpc/is_admin', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
+    });
+    if (boleh !== true) {
+      buangSesi();
+      tampilLogin('Akun ini berhasil masuk tapi belum terdaftar sebagai admin. Tambahkan user id-nya ke tabel admins lewat SQL Editor Supabase.');
+      return;
+    }
+    $('#login').classList.add('hidden');
+    $('#panel').classList.remove('hidden');
+    await muatContent();
+  } catch (e) {
+    buangSesi();
+    tampilLogin(e.message === 'sesi berakhir' ? 'Sesi berakhir. Silakan masuk lagi.' : e.message);
+  }
+}
+
+const tersimpan = bacaSesi();
+if (tersimpan && tersimpan.refresh_token) { sesi = tersimpan; mulai(); }
+else tampilLogin();
+
+})();
+</script>
+</body>
+</html>

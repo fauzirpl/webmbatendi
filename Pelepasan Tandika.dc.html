@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0B1523;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:#C4462F;text-decoration:none}
+a:hover{color:#F2B927}
+input,textarea,button{font-family:inherit}
+textarea{resize:none}
+::selection{background:#F2B927;color:#0F1B2D}
+@keyframes mq{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.9;transform:scale(1.1)}}
+@keyframes sky{0%,100%{opacity:.28}50%{opacity:.75}}
+@keyframes blink{0%,64%{opacity:1}65%,100%{opacity:.2}}
+@keyframes slam{0%{transform:scale(2.2) rotate(-20deg);opacity:0}55%{transform:scale(.92) rotate(-8deg);opacity:1}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+</style>
+</helmet>
+
+<div style="position:relative;max-width:430px;margin:0 auto;background:#F5F0E6;min-height:100vh;overflow-x:hidden;padding-bottom:96px;box-shadow:0 0 70px rgba(0,0,0,.55)">
+
+<div style="position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:80;pointer-events:none">
+<div style="height:3px;background:rgba(15,27,45,.12)"><div id="progBar" style="height:3px;width:0%;background:var(--acc,#F2B927)"></div></div>
+<div id="progPlane" style="position:absolute;top:-6px;left:-9px;width:16px;height:16px;color:#0F1B2D"><svg viewBox="0 0 18 18" width="16" height="16" fill="currentColor"><path d="M1.4 9.2 16.4 2.1c.5-.2 1 .3.8.8l-4.6 12.4c-.2.5-.9.5-1.1 0L9.3 10.6 4 8.6c-.5-.2-.6-.9-.1-1.1z"></path></svg></div>
+<button onClick="{{ toggleMusic }}" style="pointer-events:auto;position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid rgba(245,240,230,.22);border-radius:999px;background:rgba(15,27,45,.86);color:#F5F0E6;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.12em;cursor:pointer" style-active="transform:scale(.95)"><span style="width:6px;height:6px;border-radius:50%;background:var(--acc,#F2B927);animation:pulse 1.6s ease-in-out infinite"></span>{{ musicLabel }}</button>
+</div>
+
+<canvas id="cfx" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:95"></canvas>
+<div id="toast" style="position:fixed;bottom:104px;left:50%;transform:translate(-50%,16px);width:max-content;max-width:300px;padding:11px 16px;border-radius:999px;background:#0F1B2D;color:#F5F0E6;font-size:12px;font-weight:600;z-index:96;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none">Terkirim</div>
+
+<sc-if value="{{ coverOn }}" hint-placeholder-val="{{ true }}">
+<div id="cover" style="position:fixed;top:0;left:50%;transform:translate(-50%,0);width:100%;max-width:430px;height:100%;z-index:90;background:#0F1B2D;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform 1s cubic-bezier(.7,0,.2,1),opacity 1s ease">
+<div style="position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 0%,rgba(242,185,39,.16),transparent 60%)"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:190px;display:flex;align-items:flex-end;gap:3px;padding:0 10px;opacity:.5">
+<div style="flex:1;height:58px;background:#1B2C44"></div><div style="flex:1;height:104px;background:#22364F;position:relative"><div style="position:absolute;inset:8px;background-image:radial-gradient(circle,rgba(242,185,39,.6) 1px,transparent 1.4px);background-size:9px 12px;animation:sky 4s ease-in-out infinite"></div></div><div style="flex:1;height:76px;background:#1B2C44"></div><div style="flex:1.2;height:150px;background:#263B56;position:relative"><div style="position:absolute;inset:10px;background-image:radial-gradient(circle,rgba(242,185,39,.5) 1px,transparent 1.4px);background-size:10px 14px;animation:sky 5.5s ease-in-out infinite"></div></div><div style="flex:.8;height:92px;background:#1B2C44"></div><div style="flex:1;height:126px;background:#22364F"></div><div style="flex:1.4;height:70px;background:#1B2C44"></div><div style="flex:.9;height:112px;background:#263B56;position:relative"><div style="position:absolute;inset:9px;background-image:radial-gradient(circle,rgba(242,185,39,.45) 1px,transparent 1.4px);background-size:9px 13px;animation:sky 4.8s ease-in-out infinite"></div></div><div style="flex:1;height:48px;background:#1B2C44"></div>
+</div>
+<img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkSpider }}" alt="" style="position:absolute;bottom:150px;right:8px;width:88px;transform:rotate(7deg);animation:floaty 7s ease-in-out infinite;pointer-events:none;opacity:.95">
+<div style="position:relative;min-height:100%;display:flex;flex-direction:column;padding:26px 26px 30px"><div style="margin:auto 0">
+<div style="display:flex;align-items:center;justify-content:space-between;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:rgba(245,240,230,.5);margin-bottom:24px"><span>BOARDING PASS / KPA—2308</span><span style="color:var(--acc,#F2B927)">ONE WAY</span></div>
+<div style="font-family:Anton,Impact,sans-serif;text-transform:uppercase;line-height:.84;color:#F5F0E6;font-size:52px;letter-spacing:-.01em">FROM<br>MYC<span style="display:inline-block;width:36px;height:3px;background:var(--acc,#F2B927);vertical-align:middle;margin:0 8px 8px"></span><br><span style="color:var(--acc,#F2B927)">NYC</span></div>
+<div style="margin-top:16px;display:inline-flex;align-self:flex-start;padding:7px 13px;background:#C4462F;color:#F5F0E6;font-family:Anton,sans-serif;font-size:17px;letter-spacing:.08em;text-transform:uppercase;transform:rotate(-2deg)">GO TANDIKA GO!</div>
+<div style="margin-top:16px;font-size:12.5px;line-height:1.55;color:rgba(245,240,230,.68);max-width:280px;text-wrap:pretty">Pattimura ke Columbia, InshaAllah ceria. Kartu pelepasan + kumpulan ucapan dari satu bidang.</div>
+<div style="margin-top:24px;padding:16px;border:1px dashed rgba(245,240,230,.25);border-radius:14px;background:rgba(245,240,230,.04)">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:rgba(245,240,230,.42)">UNTUK,</div>
+<div style="margin-top:4px;font-family:Anton,sans-serif;font-size:27px;text-transform:uppercase;color:#F5F0E6;line-height:1">Tandika Nisaa Utami</div>
+<div style="margin-top:12px;padding-top:11px;border-top:1px solid rgba(245,240,230,.14);font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:rgba(245,240,230,.42)">DARI,</div>
+<div id="fromWho" style="margin-top:4px;font-size:14px;font-weight:700;color:var(--acc,#F2B927)">Keluarga Besar Bidang KPA</div>
+</div>
+<button onClick="{{ openInvite }}" style="margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:16px 18px;border:none;border-radius:14px;background:var(--acc,#F2B927);color:#0F1B2D;font-size:14.5px;font-weight:800;cursor:pointer;box-shadow:0 12px 30px rgba(242,185,39,.28)" style-active="transform:scale(.98)"><span>Buka Kartu</span><span style="display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em">GATE 23<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h9M8.5 4.5 12.5 8l-4 3.5"></path></svg></span></button>
+<div style="margin-top:12px;text-align:center;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">MINGGU 23 AGUSTUS 2026 · 08:00 WIB · TMII</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<section data-sec="profil" data-screen-label="Profil" style="position:relative;padding:74px 22px 32px;background:#F5F0E6;overflow:hidden">
+<div style="position:absolute;top:56px;right:-34px;width:150px;height:150px;border:1px solid rgba(15,27,45,.1);border-radius:50%"></div>
+<div style="position:relative;text-align:center">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">PELEPASAN · BIDANG KETERPADUAN<br>PROGRAM &amp; ANGGARAN</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1) .08s,transform .7s cubic-bezier(.2,.7,.2,1) .08s;position:relative;width:172px;height:172px;margin:20px auto 0;transform:rotate(-2deg)">
+<div style="position:absolute;inset:-9px;border:1px solid rgba(15,27,45,.16);border-radius:50%"></div>
+<div style="position:absolute;top:-13px;left:50%;margin-left:-46px;width:92px;height:22px;background:rgba(242,185,39,.55);border-radius:2px;transform:rotate(-5deg);z-index:2;pointer-events:none"></div>
+<div style="position:absolute;left:-74px;top:30px;width:66px;font-family:Caveat,cursive;font-size:17px;line-height:1.1;color:#C4462F;transform:rotate(-9deg);pointer-events:none">itu dia →</div>
+<image-slot id="tandika-portrait" src="{{ fotoPortrait }}" style="width:172px;height:172px" shape="circle" placeholder="Foto Tandika"></image-slot>
+<div style="position:absolute;bottom:-6px;right:-12px;width:74px;height:74px;border-radius:50%;background:#C4462F;color:#F5F0E6;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;line-height:1.5;text-align:center;animation:floaty 6s ease-in-out infinite;box-shadow:0 8px 20px rgba(196,70,47,.3);pointer-events:none">COLUMBIA<br>'26</div>
+</div>
+<h1 data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1) .14s,transform .7s cubic-bezier(.2,.7,.2,1) .14s;margin:20px 0 0;font-family:Anton,Impact,sans-serif;font-size:44px;line-height:.94;text-transform:uppercase;color:#0F1B2D;text-shadow:3px 3px 0 rgba(242,185,39,.5)">Tandika<br>Nisaa Utami</h1>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1) .2s,transform .7s cubic-bezier(.2,.7,.2,1) .2s;margin-top:13px;display:flex;align-items:center;justify-content:center;gap:9px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;color:rgba(15,27,45,.62)"><span>BIDANG KPA</span><span style="width:26px;height:1px;background:rgba(15,27,45,.3)"></span><span style="color:#C4462F;font-weight:700">COLUMBIA UNIV.</span></div>
+<p data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1) .26s,transform .7s cubic-bezier(.2,.7,.2,1) .26s;margin:16px auto 0;max-width:300px;font-size:13.5px;line-height:1.7;color:rgba(15,27,45,.72);text-wrap:pretty">{{ bio }}</p>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1) .3s,transform .7s cubic-bezier(.2,.7,.2,1) .3s;margin-top:24px;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:15px 16px;border:1px solid rgba(15,27,45,.12);border-radius:16px;background:#FBF8F1">
+<div style="text-align:center"><div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;color:rgba(15,27,45,.45)">JAKARTA</div><div style="margin-top:4px;font-family:Anton,sans-serif;font-size:26px;color:#0F1B2D">{{ clockJkt }}</div><div style="font-family:'Space Mono',monospace;font-size:8px;color:rgba(15,27,45,.4)">WIB</div></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:rgba(15,27,45,.3)"><svg viewBox="0 0 18 18" width="17" height="17" fill="currentColor" style="color:var(--acc,#F2B927)"><path d="M1.4 9.2 16.4 2.1c.5-.2 1 .3.8.8l-4.6 12.4c-.2.5-.9.5-1.1 0L9.3 10.6 4 8.6c-.5-.2-.6-.9-.1-1.1z"></path></svg><div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.1em">16.070 KM</div></div>
+<div style="text-align:center"><div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;color:rgba(15,27,45,.45)">NEW YORK</div><div style="margin-top:4px;font-family:Anton,sans-serif;font-size:26px;color:#C4462F">{{ clockNyc }}</div><div style="font-family:'Space Mono',monospace;font-size:8px;color:rgba(15,27,45,.4)">EDT</div></div>
+</div>
+<div style="margin-top:10px;text-align:center;font-family:Caveat,cursive;font-size:17px;color:rgba(15,27,45,.6);transform:rotate(-1.5deg)">{{ catatanJam }}</div>
+</section>
+
+<div style="overflow:hidden;background:#0F1B2D;padding:11px 0">
+<div style="display:flex;width:max-content;animation:mq 24s linear infinite;font-family:Anton,sans-serif;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,240,230,.9);white-space:nowrap">
+<span style="display:flex;gap:16px;padding-right:16px">FROM MYC STRAIGHT TO NYC<span style="color:var(--acc,#F2B927)">★</span>GO TANDIKA GO<span style="color:var(--acc,#F2B927)">★</span>PATTIMURA KE COLUMBIA<span style="color:var(--acc,#F2B927)">★</span></span>
+<span style="display:flex;gap:16px;padding-right:16px">FROM MYC STRAIGHT TO NYC<span style="color:var(--acc,#F2B927)">★</span>GO TANDIKA GO<span style="color:var(--acc,#F2B927)">★</span>PATTIMURA KE COLUMBIA<span style="color:var(--acc,#F2B927)">★</span></span>
+</div>
+</div>
+
+<section data-sec="waktu" data-screen-label="Countdown" style="position:relative;padding:36px 22px 40px;background:#0F1B2D;overflow:hidden">
+<div style="position:absolute;top:-40px;left:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(242,185,39,.14),transparent 65%)"></div>
+<div style="position:relative;text-align:center">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;text-align:left">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="font-family:Anton,sans-serif;font-size:28px;letter-spacing:.04em;text-transform:uppercase;color:var(--acc,#F2B927)">Departures</div>
+<div style="display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#7BC98A"><span style="width:7px;height:7px;border-radius:50%;background:#7BC98A;animation:blink 1.3s steps(1) infinite"></span>LIVE</div>
+</div>
+<div style="margin-top:12px;padding:13px 14px;border-radius:13px;background:#0B121F;border:1px solid rgba(245,240,230,.1)">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:11px 12px;font-family:'Space Mono',monospace">
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">FLIGHT</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">KPA—2308</div></div>
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">TUJUAN</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">PELEPASAN TANDIKA</div></div>
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">GATE</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">ANJ. SULAWESI</div></div>
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">STATUS</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#7BC98A;animation:blink 1.3s steps(1) infinite">ON TIME</div></div>
+</div>
+</div>
+<div style="margin-top:16px;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(245,240,230,.5);text-align:center">BOARDING DALAM</div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .12s,transform .7s ease .12s;margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+<div style="padding:13px 4px;border-radius:9px;background:linear-gradient(180deg,#1E2F49 0 48%,#131E32 52% 100%);border:1px solid rgba(245,240,230,.14);box-shadow:inset 0 1px 0 rgba(245,240,230,.12),0 5px 12px rgba(0,0,0,.32)"><div style="font-family:Anton,sans-serif;font-size:30px;color:var(--acc,#F2B927);line-height:1">{{ cd.d }}</div><div style="margin-top:5px;font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.55)">HARI</div></div>
+<div style="padding:13px 4px;border-radius:9px;background:linear-gradient(180deg,#1E2F49 0 48%,#131E32 52% 100%);border:1px solid rgba(245,240,230,.14);box-shadow:inset 0 1px 0 rgba(245,240,230,.12),0 5px 12px rgba(0,0,0,.32)"><div style="font-family:Anton,sans-serif;font-size:30px;color:#F5F0E6;line-height:1">{{ cd.h }}</div><div style="margin-top:5px;font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.55)">JAM</div></div>
+<div style="padding:13px 4px;border-radius:9px;background:linear-gradient(180deg,#1E2F49 0 48%,#131E32 52% 100%);border:1px solid rgba(245,240,230,.14);box-shadow:inset 0 1px 0 rgba(245,240,230,.12),0 5px 12px rgba(0,0,0,.32)"><div style="font-family:Anton,sans-serif;font-size:30px;color:#F5F0E6;line-height:1">{{ cd.m }}</div><div style="margin-top:5px;font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.55)">MENIT</div></div>
+<div style="padding:13px 4px;border-radius:9px;background:linear-gradient(180deg,#1E2F49 0 48%,#131E32 52% 100%);border:1px solid rgba(245,240,230,.14);box-shadow:inset 0 1px 0 rgba(245,240,230,.12),0 5px 12px rgba(0,0,0,.32)"><div style="font-family:Anton,sans-serif;font-size:30px;color:#C4462F;line-height:1">{{ cd.s }}</div><div style="margin-top:5px;font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.55)">DETIK</div></div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .18s,transform .7s ease .18s;margin-top:14px;font-size:12px;line-height:1.6;color:rgba(245,240,230,.62)">{{ cdNote }}</div>
+<div style="margin-top:8px;font-family:Caveat,cursive;font-size:17px;color:rgba(245,240,230,.55);transform:rotate(-1deg)">dateng jam 8 beneran ya, bukan jam 8 versi ngaret</div>
+</div>
+</section>
+
+<section data-sec="acara" data-screen-label="Detail Acara" style="position:relative;padding:36px 22px 40px;background:#F5F0E6">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">DETAIL PENERBANGAN</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:31px;text-transform:uppercase;color:#0F1B2D;line-height:1">Kumpul Pelepasan</h2>
+</div>
+<div data-reveal onPointerMove="{{ tilt }}" onPointerLeave="{{ untilt }}" style="opacity:0;transform:translateY(22px);transition:opacity .8s ease .08s,transform .8s ease .08s;margin-top:20px;border-radius:18px;background:#FBF8F1;border:1px solid rgba(15,27,45,.14);box-shadow:0 16px 34px rgba(15,27,45,.1);overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:#0F1B2D;color:#F5F0E6"><div style="font-family:Anton,sans-serif;font-size:14px;letter-spacing:.1em;text-transform:uppercase">Boarding Pass</div><div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:var(--acc,#F2B927)">KPA—2308</div></div>
+<div style="padding:18px 16px 6px">
+<div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px">
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.16em;color:rgba(15,27,45,.45)">FROM</div><div style="font-family:Anton,sans-serif;font-size:34px;color:#0F1B2D;line-height:1.05">MYC</div><div style="font-size:10.5px;color:rgba(15,27,45,.55)">TMII, Jakarta</div></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><svg viewBox="0 0 18 18" width="18" height="18" fill="currentColor" style="color:#C4462F"><path d="M1.4 9.2 16.4 2.1c.5-.2 1 .3.8.8l-4.6 12.4c-.2.5-.9.5-1.1 0L9.3 10.6 4 8.6c-.5-.2-.6-.9-.1-1.1z"></path></svg><div style="width:34px;border-top:1px dashed rgba(15,27,45,.35)"></div></div>
+<div style="text-align:right"><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.16em;color:rgba(15,27,45,.45)">TO</div><div style="font-family:Anton,sans-serif;font-size:34px;color:#C4462F;line-height:1.05">NYC</div><div style="font-size:10.5px;color:rgba(15,27,45,.55)">Columbia Univ.</div></div>
+</div>
+<div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px 10px">
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(15,27,45,.45)">PENUMPANG</div><div style="margin-top:3px;font-size:13px;font-weight:700;color:#0F1B2D">Tandika Nisaa Utami</div></div>
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(15,27,45,.45)">PENGANTAR</div><div style="margin-top:3px;font-size:13px;font-weight:700;color:#0F1B2D">Anggota KPA</div></div>
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(15,27,45,.45)">TANGGAL</div><div style="margin-top:3px;font-size:13px;font-weight:700;color:#0F1B2D">Minggu, 23 Agt 2026</div></div>
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(15,27,45,.45)">BOARDING</div><div style="margin-top:3px;font-size:13px;font-weight:700;color:#0F1B2D">08:00 WIB — kelar</div></div>
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(15,27,45,.45)">GATE</div><div style="margin-top:3px;font-size:13px;font-weight:700;color:#0F1B2D">Anjungan Sulawesi</div></div>
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(15,27,45,.45)">KURSI</div><div style="margin-top:3px;font-size:13px;font-weight:700;color:#0F1B2D">Bebas, lesehan</div></div>
+</div>
+<div style="margin-top:16px;padding:10px 12px;border-radius:11px;background:rgba(242,185,39,.16);border:1px dashed rgba(15,27,45,.2);font-size:11.5px;line-height:1.6;color:rgba(15,27,45,.72)">Anjungan Sulawesi Utara? Tengah? <b>Canda deng</b> — pokoknya area Sulawesi di TMII, titik pastinya dishare di grup.</div>
+</div>
+<div style="position:relative;height:22px;margin-top:8px">
+<div style="position:absolute;top:50%;left:14px;right:14px;border-top:1px dashed rgba(15,27,45,.28)"></div>
+<div style="position:absolute;top:50%;left:-11px;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;background:#F5F0E6"></div>
+<div style="position:absolute;top:50%;right:-11px;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;background:#F5F0E6"></div>
+</div>
+<div style="padding:6px 16px 16px">
+<sc-if value="{{ notTorn }}" hint-placeholder-val="{{ true }}">
+<div onPointerDown="{{ tearDown }}" onPointerMove="{{ tearMove }}" onPointerUp="{{ tearUp }}" onPointerCancel="{{ tearUp }}" style="touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none">
+<div style="height:38px;border-radius:4px;background-image:repeating-linear-gradient(90deg,#0F1B2D 0px,#0F1B2D 2px,transparent 2px,transparent 4px,#0F1B2D 4px,#0F1B2D 5px,transparent 5px,transparent 8px,#0F1B2D 8px,#0F1B2D 11px,transparent 11px,transparent 13px)"></div>
+<div style="margin-top:8px;display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)"><span>KPA · 23082026 · 0800</span><span>GO TANDIKA GO</span></div>
+<div style="margin-top:7px;text-align:center;font-family:Caveat,cursive;font-size:15.5px;color:rgba(15,27,45,.5)">geser potongan ini ke kanan buat disobek ↝</div>
+</div>
+</sc-if>
+<sc-if value="{{ torn }}" hint-placeholder-val="{{ false }}">
+<div style="padding:13px 12px;border:1.5px dashed rgba(15,27,45,.25);border-radius:11px;text-align:center;font-size:12px;line-height:1.6;color:rgba(15,27,45,.65)">Sobekan tiketnya kamu kantongi — kenang-kenangan resmi dari bidang.</div>
+</sc-if>
+<div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:9px">
+<button onClick="{{ addToCal }}" style="padding:13px 8px;border:none;border-radius:12px;background:#0F1B2D;color:#F5F0E6;font-size:12.5px;font-weight:700;cursor:pointer" style-active="transform:scale(.97)">Simpan Tanggal</button>
+<a href="https://www.google.com/maps/search/?api=1&amp;query=Taman+Mini+Indonesia+Indah+Jakarta" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;padding:13px 8px;border-radius:12px;background:var(--acc,#F2B927);color:#0F1B2D;font-size:12.5px;font-weight:700">Lihat Lokasi</a>
+</div>
+</div>
+</div>
+
+<sc-if value="{{ showRundown }}" hint-placeholder-val="{{ true }}">
+<div data-reveal style="opacity:0;transform:translateY(20px);transition:opacity .8s ease .1s,transform .8s ease .1s;margin-top:24px;padding:18px 16px;border-radius:18px;background:#FBF8F1;border:1px solid rgba(15,27,45,.12)">
+<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:Anton,sans-serif;font-size:19px;text-transform:uppercase;color:#0F1B2D">Rundown</div><div style="padding:4px 9px;border-radius:999px;background:rgba(196,70,47,.12);color:#C4462F;font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.12em">DRAFT</div></div>
+<div style="margin-top:12px">
+<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">08.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Kumpul &amp; sarapan bareng</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Patungan nasi kuning, gelar tikar</div></div></div>
+<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">09.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Sesi kesan &amp; harapan</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Ucapan dari halaman ini dibacakan</div></div></div>
+<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">10.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Games murah meriah</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Hadiah receh, gengsi dipertaruhkan</div></div></div>
+<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(15,27,45,.14)"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">11.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Serah kenang-kenangan</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Plus foto bareng satu bidang</div></div></div>
+<div style="display:grid;grid-template-columns:52px 1fr;gap:12px;padding:11px 0"><div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#C4462F">12.00</div><div><div style="font-size:13px;font-weight:700;color:#0F1B2D">Bubar, sampai jumpa di NYC</div><div style="font-size:11.5px;color:rgba(15,27,45,.55);margin-top:2px">Yang mau lanjut, terserah</div></div></div>
+</div>
+<div style="margin-top:10px;font-size:11px;color:rgba(15,27,45,.45)">*Masih draft — kabari kalau ada yang mau digeser.</div>
+</div>
+</sc-if>
+</section>
+
+<section data-sec="jalan" data-screen-label="Timeline" style="position:relative;padding:36px 22px 40px;background:#EDE6D8">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">FLIGHT PATH</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Pattimura ke Columbia</h2>
+<div style="margin-top:7px;font-size:12px;line-height:1.6;color:rgba(15,27,45,.55)">Dari Jl. Pattimura, Jaksel — ke Morningside Heights, NYC.</div>
+</div>
+<div style="position:relative;margin-top:22px;padding-left:26px">
+<div style="position:absolute;left:6px;top:6px;bottom:14px;width:1px;background:repeating-linear-gradient(180deg,rgba(15,27,45,.32) 0 5px,transparent 5px 11px)"></div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;position:relative;padding-bottom:22px">
+<div style="position:absolute;left:-26px;top:3px;width:13px;height:13px;border-radius:50%;background:#0F1B2D;border:3px solid #EDE6D8;box-shadow:0 0 0 1px rgba(15,27,45,.25)"></div>
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;color:rgba(15,27,45,.45)">BAB 01 · JAKSEL</div>
+<div style="margin-top:4px;font-family:Anton,sans-serif;font-size:21px;text-transform:uppercase;color:#0F1B2D">Markas Jalan Pattimura</div>
+<div style="margin-top:5px;font-size:12.5px;line-height:1.65;color:rgba(15,27,45,.7)">Kantor Pusat Kementerian PU, Jalan Pattimura, Jakarta Selatan — tempat program disusun dan anggaran dikawal tiap hari.</div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .07s,transform .7s ease .07s;position:relative;padding-bottom:22px">
+<div style="position:absolute;left:-26px;top:3px;width:13px;height:13px;border-radius:50%;background:#0F1B2D;border:3px solid #EDE6D8;box-shadow:0 0 0 1px rgba(15,27,45,.25)"></div>
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;color:rgba(15,27,45,.45)">BAB 02 · BIDANG KPA</div>
+<div style="margin-top:4px;font-family:Anton,sans-serif;font-size:21px;text-transform:uppercase;color:#0F1B2D">Jadi Andalan KPA</div>
+<div style="margin-top:5px;font-size:12.5px;line-height:1.65;color:rgba(15,27,45,.7)">Program, anggaran, revisi, deadline. Di antara semua itu, kita jadi satu tim yang saling nutupin.</div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .14s,transform .7s ease .14s;position:relative;padding-bottom:22px">
+<div style="position:absolute;left:-26px;top:3px;width:13px;height:13px;border-radius:50%;background:var(--acc,#F2B927);border:3px solid #EDE6D8;box-shadow:0 0 0 1px rgba(15,27,45,.25)"></div>
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;color:rgba(15,27,45,.45)">BAB 03 · KABAR BAIK</div>
+<div style="margin-top:4px;font-family:Anton,sans-serif;font-size:21px;text-transform:uppercase;color:#0F1B2D">Columbia bilang: ya</div>
+<div style="margin-top:5px;font-size:12.5px;line-height:1.65;color:rgba(15,27,45,.7)">Kabar yang bikin satu bidang ribut sehari penuh. Bangga campur nggak rela.</div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .21s,transform .7s ease .21s;position:relative">
+<div style="position:absolute;left:-26px;top:3px;width:13px;height:13px;border-radius:50%;background:#C4462F;border:3px solid #EDE6D8;box-shadow:0 0 0 1px rgba(15,27,45,.25);animation:pulse 2s ease-in-out infinite"></div>
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;color:#C4462F">BAB 04 · SEBENTAR LAGI</div>
+<div style="margin-top:4px;font-family:Anton,sans-serif;font-size:21px;text-transform:uppercase;color:#0F1B2D">Terbang ke New York</div>
+<div style="margin-top:5px;font-size:12.5px;line-height:1.65;color:rgba(15,27,45,.7)">Morningside Heights, musim dingin pertama, dan cerita-cerita yang nanti kita tunggu.</div>
+</div>
+</div>
+</section>
+
+<section data-sec="bocoran" data-screen-label="Bocoran NYC" style="position:relative;padding:36px 0 38px;background:#F5F0E6;border-top:1px dashed rgba(15,27,45,.15);overflow:hidden">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;padding:0 22px;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">PREDIKSI TIM DOKUMENTASI</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Bocoran Hidup di NYC</h2>
+<div style="margin-top:7px;font-family:Caveat,cursive;font-size:18px;color:rgba(15,27,45,.6);transform:rotate(-1deg)">100% belum terjadi, 100% bakal kejadian</div>
+</div>
+<div style="margin-top:16px;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 22px 10px;-webkit-overflow-scrolling:touch">
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkStreet }}" alt="Tandika jalan di Brooklyn" style="max-width:100%;max-height:192px;transform:rotate(-3deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">hari pertama: sok santai, padahal nyasar</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkMap }}" alt="Tandika baca peta di salju" style="max-width:100%;max-height:192px;transform:rotate(2.5deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">musim dingin pertama, masih percaya peta kertas</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkCoffee }}" alt="Tandika borong kopi" style="max-width:100%;max-height:192px;transform:rotate(-2deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">niat beli satu kopi, pulang bawa tiga</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkSofa }}" alt="Tandika di sofa oranye" style="max-width:100%;max-height:192px;transform:rotate(2deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">nemu sofa legendaris itu, langsung setia</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkDino }}" alt="Tandika ketemu fosil dinosaurus" style="max-width:100%;max-height:192px;transform:rotate(-2.5deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">weekend ke museum, foto bareng senior</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkZoo }}" alt="Tandika di Central Park Zoo" style="max-width:100%;max-height:192px;transform:rotate(2deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">networking sama warga lokal</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkYogurt }}" alt="Tandika makan yogurt di tangga" style="max-width:100%;max-height:192px;transform:rotate(-2deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">makan siang hemat, dompet aman</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkEmpire }}" alt="Tandika manjat Empire State" style="max-width:100%;max-height:192px;transform:rotate(2.5deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">naik Empire State, versi paling hemat</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkGhost }}" alt="Tandika ketemu hantu hijau" style="max-width:100%;max-height:192px;transform:rotate(-2deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">ketemu warga NYC yang… lain</div></div>
+<div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkSpider }}" alt="Spider-Tandika di atap NYC" style="max-width:100%;max-height:192px;transform:rotate(2deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">kalau NYC aman-aman saja, kamu tahu siapa jagainnya</div></div>
+</div>
+</section>
+
+<section data-sec="kesan" data-screen-label="Kesan" style="position:relative;padding:36px 22px 40px;background:#F5F0E6">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">DARI KAMI, BUAT KAMU</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Kesan Sebelum Pisah</h2>
+<div style="margin-top:7px;font-size:12px;color:rgba(15,27,45,.55)">Ketuk kartunya untuk buka.</div>
+</div>
+<div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:11px">
+<div onClick="{{ flip }}" data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;height:178px;perspective:900px;cursor:pointer">
+<div data-f="0" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,.1,.2,1)">
+<div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;background:#0F1B2D;color:#F5F0E6;padding:15px;display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.5)">KESAN 01</div><div style="font-family:Anton,sans-serif;font-size:19px;line-height:1.05;text-transform:uppercase">Yang paling kami ingat</div><div style="font-family:'Space Mono',monospace;font-size:7.5px;color:var(--acc,#F2B927);letter-spacing:.12em">KETUK →</div></div>
+<div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:16px;background:var(--acc,#F2B927);color:#0F1B2D;padding:15px;display:flex;align-items:center;font-size:12.5px;line-height:1.6;font-weight:500">Seberapa mepet pun deadline-nya, kamu yang paling dulu bilang “santai, bisa diatur”.</div>
+</div>
+</div>
+<div onClick="{{ flip }}" data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .07s,transform .7s ease .07s;height:178px;perspective:900px;cursor:pointer">
+<div data-f="0" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,.1,.2,1)">
+<div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;background:#C4462F;color:#F5F0E6;padding:15px;display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.6)">KESAN 02</div><div style="font-family:Anton,sans-serif;font-size:19px;line-height:1.05;text-transform:uppercase">Khas Tandika banget</div><div style="font-family:'Space Mono',monospace;font-size:7.5px;color:#F5F0E6;letter-spacing:.12em">KETUK →</div></div>
+<div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:16px;background:#FBF8F1;color:#0F1B2D;border:1px solid rgba(15,27,45,.14);padding:15px;display:flex;align-items:center;font-size:12.5px;line-height:1.6;font-weight:500">Ketawa dulu, kerja kemudian — hasilnya tetap rapi. Dan tiap keceplosan: “canda deng”.</div>
+</div>
+</div>
+<div onClick="{{ flip }}" data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .14s,transform .7s ease .14s;height:178px;perspective:900px;cursor:pointer">
+<div data-f="0" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,.1,.2,1)">
+<div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;background:#FBF8F1;border:1px solid rgba(15,27,45,.16);color:#0F1B2D;padding:15px;display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(15,27,45,.45)">KESAN 03</div><div style="font-family:Anton,sans-serif;font-size:19px;line-height:1.05;text-transform:uppercase">Pelajaran dari kamu</div><div style="font-family:'Space Mono',monospace;font-size:7.5px;color:#C4462F;letter-spacing:.12em">KETUK →</div></div>
+<div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:16px;background:#0F1B2D;color:#F5F0E6;padding:15px;display:flex;align-items:center;font-size:12.5px;line-height:1.6;font-weight:500">Mimpi besar nggak harus berisik. Cukup dikerjain diam-diam sampai jadi.</div>
+</div>
+</div>
+<div onClick="{{ flip }}" data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .21s,transform .7s ease .21s;height:178px;perspective:900px;cursor:pointer">
+<div data-f="0" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,.1,.2,1)">
+<div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;background:#1F5F5B;color:#F5F0E6;padding:15px;display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.6)">KESAN 04</div><div style="font-family:Anton,sans-serif;font-size:19px;line-height:1.05;text-transform:uppercase">Yang bakal dirindukan</div><div style="font-family:'Space Mono',monospace;font-size:7.5px;color:var(--acc,#F2B927);letter-spacing:.12em">KETUK →</div></div>
+<div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:16px;background:#FBF8F1;color:#0F1B2D;border:1px solid rgba(15,27,45,.14);padding:15px;display:flex;align-items:center;font-size:12.5px;line-height:1.6;font-weight:500">Satu meja jadi sepi. Grup bidang kehilangan tukang nyeletuk paling tepat waktunya.</div>
+</div>
+</div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .1s,transform .7s ease .1s;margin-top:12px;position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(15,27,45,.16);box-shadow:0 10px 22px rgba(15,27,45,.1)">
+<div style="padding:22px 18px;background:var(--acc,#F2B927);text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.16em;color:rgba(15,27,45,.55)">PESAN RAHASIA BIDANG · KESAN 05</div>
+<div style="margin-top:8px;font-family:Caveat,cursive;font-size:22px;line-height:1.3;color:#0F1B2D">Kalau nanti homesick, inget: satu bidang ini fans garis keras kamu. Pulang lebaran, kita kumpul lagi.</div>
+</div>
+<canvas id="scr" onPointerDown="{{ scrDown }}" onPointerMove="{{ scrMove }}" onPointerUp="{{ scrUp }}" onPointerCancel="{{ scrUp }}" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair"></canvas>
+</div>
+</section>
+
+<section data-sec="galeri" data-screen-label="Galeri" style="position:relative;padding:36px 0 40px;background:#EDE6D8;overflow:hidden">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;padding:0 22px;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">ARSIP BIDANG KPA</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Galeri Kenangan</h2>
+<div style="margin-top:7px;font-size:12px;line-height:1.6;color:rgba(15,27,45,.55)">Geser ke samping untuk lihat semuanya.</div>
+</div>
+<div style="margin-top:18px;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 22px 12px;-webkit-overflow-scrolling:touch">
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g1" src="{{ fotoG1 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Foto bareng KPA"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri1 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g2" src="{{ fotoG2 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Momen kerja/lembur"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri2 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g3" src="{{ fotoG3 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Makan-makan"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri3 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g4" src="{{ fotoG4 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Tandika &amp; tim"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri4 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g5" src="{{ fotoG5 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Kegiatan luar"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri5 }}</div></div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;padding:0 22px">
+<div style="position:relative;padding:12px;background:#FBF8F1;border:1px solid rgba(15,27,45,.12);border-radius:16px;box-shadow:0 10px 24px rgba(15,27,45,.08)">
+<div style="position:relative;height:150px"><image-slot id="kpa-wide" src="{{ fotoWide }}" style="width:100%;height:150px" shape="rounded" radius="10" placeholder="Foto bareng satu bidang"></image-slot></div>
+<div style="margin-top:10px;display:flex;align-items:baseline;justify-content:space-between;gap:10px"><div style="font-size:12px;font-weight:700;color:#0F1B2D">Bidang KPA, lengkap.</div><div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:rgba(15,27,45,.45)">SEBELUM SATU PERGI</div></div>
+</div>
+</div>
+</section>
+
+<section data-sec="koper" data-screen-label="Bekal Koper" style="position:relative;padding:36px 22px 42px;background:#F5F0E6">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">ISI BARENG-BARENG</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Bekal Koper Tandika</h2>
+<div style="margin-top:7px;font-size:12px;color:rgba(15,27,45,.55)">Ketuk bekalnya buat masuk koper. Ketuk lagi buat dikeluarkan.</div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .06s,transform .7s ease .06s;margin-top:16px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
+<button onClick="{{ pack }}" data-n="Jaket tebal" style="padding:9px 13px;border:1.5px solid #0F1B2D;border-radius:999px;background:#FBF8F1;color:#0F1B2D;font-size:12px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 rgba(15,27,45,.8)" style-active="transform:translate(1px,1px)">Jaket tebal</button>
+<button onClick="{{ pack }}" data-n="Sambal sachet" style="padding:9px 13px;border:1.5px solid #0F1B2D;border-radius:999px;background:#FBF8F1;color:#0F1B2D;font-size:12px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 rgba(15,27,45,.8)" style-active="transform:translate(1px,1px)">Sambal sachet</button>
+<button onClick="{{ pack }}" data-n="Foto satu bidang" style="padding:9px 13px;border:1.5px solid #0F1B2D;border-radius:999px;background:#FBF8F1;color:#0F1B2D;font-size:12px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 rgba(15,27,45,.8)" style-active="transform:translate(1px,1px)">Foto satu bidang</button>
+<button onClick="{{ pack }}" data-n="Doa satu bidang" style="padding:9px 13px;border:1.5px solid #0F1B2D;border-radius:999px;background:#FBF8F1;color:#0F1B2D;font-size:12px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 rgba(15,27,45,.8)" style-active="transform:translate(1px,1px)">Doa satu bidang</button>
+<button onClick="{{ pack }}" data-n="Tumbler KPA" style="padding:9px 13px;border:1.5px solid #0F1B2D;border-radius:999px;background:#FBF8F1;color:#0F1B2D;font-size:12px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 rgba(15,27,45,.8)" style-active="transform:translate(1px,1px)">Tumbler KPA</button>
+<button onClick="{{ pack }}" data-n="Playlist lembur" style="padding:9px 13px;border:1.5px solid #0F1B2D;border-radius:999px;background:#FBF8F1;color:#0F1B2D;font-size:12px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 rgba(15,27,45,.8)" style-active="transform:translate(1px,1px)">Playlist lembur</button>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .12s,transform .7s ease .12s;margin-top:18px;position:relative">
+<div style="width:86px;height:24px;margin:0 auto;border:5px solid #4E3018;border-bottom:none;border-radius:12px 12px 0 0"></div>
+<div style="position:relative;height:212px;border-radius:16px;background:linear-gradient(160deg,#7A4A2B,#5A3820);box-shadow:inset 0 2px 0 rgba(255,255,255,.12),0 14px 28px rgba(15,27,45,.2);overflow:hidden">
+<div style="position:absolute;top:0;bottom:0;left:20%;width:13px;background:rgba(15,27,45,.28)"></div>
+<div style="position:absolute;top:0;bottom:0;right:20%;width:13px;background:rgba(15,27,45,.28)"></div>
+<img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkEmpire }}" alt="" style="position:absolute;left:4%;top:7%;width:62px;transform:rotate(-8deg);pointer-events:none">
+<img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkZoo }}" alt="" style="position:absolute;right:3%;bottom:13%;width:72px;transform:rotate(7deg);pointer-events:none">
+<sc-for list="{{ packed }}" as="p" hint-placeholder-count="1">
+<div style="position:absolute;left:{{ p.l }};top:{{ p.t }};transform:rotate({{ p.rot }});padding:7px 11px;border-radius:999px;background:#FBF8F1;border:1.5px solid #0F1B2D;font-size:11px;font-weight:800;color:#0F1B2D;box-shadow:2px 3px 0 rgba(15,27,45,.4);white-space:nowrap">{{ p.name }}</div>
+</sc-for>
+<div style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:rgba(245,240,230,.78)">{{ nPacked }}/6 BEKAL MASUK</div>
+</div>
+<div style="position:absolute;top:14px;right:0;transform:rotate(9deg);width:70px;padding:7px 8px;background:var(--acc,#F2B927);border:1px solid rgba(15,27,45,.3);border-radius:7px;box-shadow:0 4px 10px rgba(15,27,45,.18);pointer-events:none"><div style="width:8px;height:8px;border-radius:50%;background:#F5F0E6;border:1px solid rgba(15,27,45,.4);margin:0 auto"></div><div style="margin-top:4px;text-align:center;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.08em;color:#0F1B2D;font-weight:700">TND→NYC</div></div>
+</div>
+<div style="margin-top:12px;text-align:center;font-family:Caveat,cursive;font-size:17px;color:rgba(15,27,45,.55);transform:rotate(-1deg)">koper beneran nyusul di TMII — ini simbolis dulu</div>
+</section>
+
+<div style="height:18px;background:#0F1B2D;background-image:radial-gradient(circle 7px at 13px 0px,#F5F0E6 6.4px,transparent 7.4px);background-size:26px 18px;background-repeat:repeat-x"></div>
+
+<section data-sec="ucapan" data-screen-label="Ucapan" style="position:relative;padding:36px 22px 42px;background:#0F1B2D;overflow:hidden">
+<div style="position:absolute;bottom:-60px;right:-50px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(196,70,47,.22),transparent 65%)"></div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;position:relative;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(245,240,230,.5)">DIISI OLEH MEMBER KPA</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#F5F0E6;line-height:1">Ucapan untuk Tandika</h2>
+<p style="margin:9px auto 0;max-width:290px;font-size:12.5px;line-height:1.65;color:rgba(245,240,230,.62);text-wrap:pretty">Tulis kesan, harapan, atau doa kamu. Semua yang masuk dibacakan di sesi 09.00.</p>
+</div>
+
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .06s,transform .7s ease .06s;position:relative;margin-top:18px;padding:16px;border-radius:18px;background:rgba(245,240,230,.06);border:1px solid rgba(245,240,230,.14)">
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:rgba(245,240,230,.5)">NAMA KAMU</div>
+<input value="{{ fName }}" onInput="{{ setName }}" placeholder="cth. Rizal — Seksi Program" maxLength="42" style="margin-top:6px;width:100%;padding:12px 13px;border:1px solid rgba(245,240,230,.18);border-radius:11px;background:rgba(11,21,35,.5);color:#F5F0E6;font-size:13.5px;outline:none" style-focus="border-color:#F2B927">
+<div style="margin-top:14px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:rgba(245,240,230,.5)">KESAN &amp; HARAPAN</div>
+<textarea value="{{ fMsg }}" onInput="{{ setMsg }}" rows="4" maxLength="420" placeholder="Tulis di sini... minimal 2 karakter" style="margin-top:6px;width:100%;padding:12px 13px;border:1px solid rgba(245,240,230,.18);border-radius:11px;background:rgba(11,21,35,.5);color:#F5F0E6;font-size:13.5px;line-height:1.6;outline:none" style-focus="border-color:#F2B927"></textarea>
+<div style="margin-top:9px;display:flex;flex-wrap:wrap;gap:6px">
+<button onClick="{{ chip }}" data-t="Sukses terus di Columbia, Tandika. Jangan lupa balik bawa cerita — dan magnet kulkas." style="padding:7px 11px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:transparent;color:rgba(245,240,230,.8);font-size:11px;cursor:pointer" style-active="transform:scale(.96)">+ doa sukses</button>
+<button onClick="{{ chip }}" data-t="Bidang KPA bakal sepi tanpa kamu. Sehat-sehat di sana, jangan skip makan." style="padding:7px 11px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:transparent;color:rgba(245,240,230,.8);font-size:11px;cursor:pointer" style-active="transform:scale(.96)">+ bakal kangen</button>
+<button onClick="{{ chip }}" data-t="Dari MYC straight to NYC. Bangga banget, deng. Gaskeun!" style="padding:7px 11px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:transparent;color:rgba(245,240,230,.8);font-size:11px;cursor:pointer" style-active="transform:scale(.96)">+ versi singkat</button>
+</div>
+<div style="margin-top:15px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:rgba(245,240,230,.5)">KONFIRMASI KEHADIRAN</div>
+<div style="margin-top:7px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button onClick="{{ setAtt }}" data-att="Datang" data-v="Datang" style="padding:12px 8px;border:1px solid rgba(245,240,230,.2);border-radius:11px;background:#F5F0E6;color:#0F1B2D;font-size:12.5px;font-weight:700;cursor:pointer">Datang</button>
+<button onClick="{{ setAtt }}" data-att="Absen" data-v="Absen" style="padding:12px 8px;border:1px solid rgba(245,240,230,.2);border-radius:11px;background:transparent;color:rgba(245,240,230,.6);font-size:12.5px;font-weight:700;cursor:pointer">Absen</button>
+</div>
+<button onClick="{{ submitWish }}" style="margin-top:12px;width:100%;padding:15px;border:none;border-radius:12px;background:var(--acc,#F2B927);color:#0F1B2D;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px rgba(242,185,39,.22)" style-active="transform:scale(.98)">{{ sendLabel }}</button>
+<div style="margin-top:9px;font-size:10.5px;line-height:1.5;color:rgba(245,240,230,.4)">*Ucapan tersimpan online — begitu terkirim, semua yang buka halaman ini bisa membacanya.</div>
+<sc-if value="{{ offline }}">
+<div style="margin-top:9px;padding:9px 11px;border-radius:10px;background:rgba(196,70,47,.14);border:1px solid rgba(196,70,47,.4);font-size:10.5px;line-height:1.5;color:rgba(245,240,230,.75)">Koneksi ke server ucapan lagi bermasalah — daftar di bawah mungkin belum yang paling baru.</div>
+</sc-if>
+</div>
+
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .1s,transform .7s ease .1s;position:relative;margin-top:22px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(245,240,230,.05);border:1px solid rgba(245,240,230,.1)">
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:Anton,sans-serif;font-size:22px;color:var(--acc,#F2B927)">{{ nWishes }}</span><span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:rgba(245,240,230,.55)">UCAPAN</span></div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:Anton,sans-serif;font-size:22px;color:#F5F0E6">{{ nHadir }}</span><span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:rgba(245,240,230,.55)">DATANG</span></div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:Anton,sans-serif;font-size:22px;color:#C4462F">{{ nAbsen }}</span><span style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:rgba(245,240,230,.55)">ABSEN</span></div>
+</div>
+
+<sc-if value="{{ noWishes }}" hint-placeholder-val="{{ true }}">
+<div style="position:relative;margin-top:14px;padding:26px 18px;text-align:center;border:1px dashed rgba(245,240,230,.2);border-radius:16px">
+<div style="font-family:Anton,sans-serif;font-size:19px;text-transform:uppercase;color:rgba(245,240,230,.85)">Belum ada ucapan
+</div>
+<div style="margin-top:6px;font-size:12px;line-height:1.6;color:rgba(245,240,230,.5)">Jadilah yang pertama nitip kesan buat Tandika.</div>
+</div>
+</sc-if>
+
+<div style="position:relative;margin-top:14px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ wishes }}" as="w" hint-placeholder-count="2">
+<div style="position:relative;margin-top:5px;padding:14px 15px;border-radius:14px 17px 15px 14px;background:#F5F0E6;box-shadow:0 8px 20px rgba(0,0,0,.18);transform:rotate({{ w.rot }})" style-before="content:'';position:absolute;top:-9px;left:50%;margin-left:-38px;width:76px;height:19px;background:rgba(242,185,39,.55);transform:rotate(-2deg);border-radius:2px">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="flex:none;width:34px;height:34px;border-radius:50%;background:#0F1B2D;color:#F5F0E6;display:flex;align-items:center;justify-content:center;font-family:Anton,sans-serif;font-size:15px">{{ w.initial }}</div>
+<div style="flex:1;min-width:0">
+<div style="font-size:13px;font-weight:700;color:#0F1B2D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ w.name }}</div>
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:rgba(15,27,45,.45)">{{ w.when }}</div>
+</div>
+<div style="flex:none;padding:4px 9px;border-radius:999px;background:rgba(15,27,45,.07);font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#0F1B2D">{{ w.att }}</div>
+</div>
+<div style="margin-top:10px;font-size:13px;line-height:1.65;color:rgba(15,27,45,.82);text-wrap:pretty">{{ w.msg }}</div>
+<sc-if value="{{ w.canDel }}">
+<div style="margin-top:9px;display:flex;justify-content:flex-end"><button onClick="{{ del }}" data-id="{{ w.id }}" style="padding:5px 10px;border:1px solid rgba(15,27,45,.14);border-radius:999px;background:transparent;color:rgba(15,27,45,.45);font-size:10.5px;cursor:pointer" style-active="transform:scale(.95)">hapus</button></div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+
+<sc-if value="{{ showGift }}" hint-placeholder-val="{{ true }}">
+<section data-sec="hadiah" data-screen-label="Kenang-kenangan" style="position:relative;padding:36px 22px 40px;background:#EDE6D8">
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;text-align:center">
+<div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(15,27,45,.5)">PATUNGAN SATU BIDANG</div>
+<h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Kenang-kenangan</h2>
+<p style="margin:9px auto 0;max-width:295px;font-size:12.5px;line-height:1.65;color:rgba(15,27,45,.65);text-wrap:pretty">Ikut patungan buat kado perpisahan. Sukarela, tidak ada nominal wajib.</p>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(20px);transition:opacity .8s ease .08s,transform .8s ease .08s;margin-top:18px;padding:17px;border-radius:18px;background:linear-gradient(150deg,#0F1B2D,#22364F);box-shadow:0 16px 32px rgba(15,27,45,.24)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between">
+<div style="width:34px;height:26px;border-radius:5px;background:linear-gradient(135deg,#F2B927,#C08A12)"></div>
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:rgba(245,240,230,.55);text-align:right">{{ rekBank }}</div>
+</div>
+<div style="margin-top:20px;font-family:'Space Mono',monospace;font-size:17px;letter-spacing:.06em;color:#F5F0E6">{{ rekNomor }}</div>
+<div style="margin-top:12px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+<div><div style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.45)">ATAS NAMA</div><div style="margin-top:2px;font-size:12.5px;font-weight:700;color:#F5F0E6">{{ rekNama }}</div></div>
+<button onClick="{{ copy }}" data-copy="{{ rekNomorRaw }}" style="flex:none;padding:9px 14px;border:none;border-radius:999px;background:var(--acc,#F2B927);color:#0F1B2D;font-size:11.5px;font-weight:800;cursor:pointer" style-active="transform:scale(.96)">Copy</button>
+</div>
+</div>
+<sc-if value="{{ rekMasihContoh }}">
+<div style="margin-top:11px;padding:12px 14px;border-radius:13px;background:rgba(196,70,47,.1);border:1px dashed rgba(196,70,47,.35);font-size:11.5px;line-height:1.6;color:rgba(15,27,45,.72)">Nomor rekening di atas masih contoh — isi nomor asli bendahara lewat panel admin.</div>
+</sc-if>
+</section>
+</sc-if>
+
+<section data-screen-label="Penutup" style="position:relative;padding:38px 22px 34px;background:#F5F0E6;overflow:hidden">
+<div data-reveal style="opacity:0;transform:translateY(20px);transition:opacity .8s ease,transform .8s ease;position:relative;padding:16px;border-radius:6px;background:#FBF8F1;border:1px solid rgba(15,27,45,.14);box-shadow:0 14px 30px rgba(15,27,45,.1)">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+<div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:rgba(15,27,45,.45);line-height:1.7">POST CARD<br>JAKARTA → NEW YORK<br>PAR AVION</div>
+<div style="flex:none;width:62px;height:74px;border:2px dashed rgba(15,27,45,.3);border-radius:3px;padding:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(242,185,39,.16)">
+<div style="font-family:Anton,sans-serif;font-size:16px;line-height:.95;color:#C4462F">NYC</div>
+<div style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:.1em;color:rgba(15,27,45,.6);margin-top:3px">23·08·2026</div>
+</div>
+</div>
+<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(15,27,45,.12);font-size:13.5px;line-height:1.75;color:rgba(15,27,45,.8);text-wrap:pretty">Tandika, terima kasih untuk semua kerja, ketawa, dan sabar yang kamu bagi di bidang ini. Berangkatlah dengan tenang — kami di sini ikut bangga. Jaga diri, jaga ibadah, dan pulang bawa cerita.</div>
+<div style="margin-top:16px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+<div><div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:rgba(15,27,45,.45)">SALAM HANGAT,</div><div style="margin-top:3px;font-family:Anton,sans-serif;font-size:19px;text-transform:uppercase;color:#0F1B2D;line-height:1.05">Keluarga Besar<br>Bidang KPA</div></div>
+<div style="flex:none;width:60px;height:60px;border-radius:50%;border:1px solid rgba(196,70,47,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#C4462F;font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:.1em;text-align:center;transform:rotate(-9deg)">GO<br><span style="font-family:Anton,sans-serif;font-size:13px;letter-spacing:.02em">TANDIKA</span><br>GO</div>
+</div>
+<sc-if value="{{ stamped }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:10px;right:88px;padding:8px 11px;border:3px double #C4462F;border-radius:6px;color:#C4462F;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;line-height:1.6;text-align:center;transform:rotate(-8deg);animation:slam .5s cubic-bezier(.2,.8,.3,1.2) both;background:rgba(251,248,241,.82);pointer-events:none">RESTU PENUH<br>BIDANG KPA · 2026</div></sc-if>
+<div style="margin-top:12px;font-family:Caveat,cursive;font-size:17px;color:rgba(15,27,45,.55);transform:rotate(-1deg)">P.S. oleh-oleh magnet kulkas jangan lupa, deng.</div>
+</div>
+<div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease .1s,transform .7s ease .1s;margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:9px">
+<button onPointerDown="{{ stampDown }}" onPointerUp="{{ stampUp }}" onPointerLeave="{{ stampUp }}" style="padding:15px 8px;border:1.5px dashed rgba(196,70,47,.55);border-radius:13px;background:transparent;color:#C4462F;font-size:12.5px;font-weight:800;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation" style-active="transform:scale(.97)">{{ stampLabel }}</button>
+<button onClick="{{ balloon }}" style="padding:15px 8px;border:none;border-radius:13px;background:#0F1B2D;color:#F5F0E6;font-size:12.5px;font-weight:700;cursor:pointer" style-active="transform:scale(.98)">Terbangkan Doa</button>
+</div>
+<div style="margin-top:22px;text-align:center;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;color:rgba(15,27,45,.4);line-height:1.9">FROM MYC STRAIGHT TO NYC<br>PATTIMURA KE COLUMBIA, INSHAALLAH CERIA<br>BIDANG KETERPADUAN PROGRAM &amp; ANGGARAN</div>
+</section>
+
+<div style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:85;display:flex;gap:3px;padding:5px;border-radius:999px;background:rgba(15,27,45,.93);border:1px solid rgba(245,240,230,.14);box-shadow:0 12px 28px rgba(0,0,0,.35);backdrop-filter:blur(8px)">
+<button onClick="{{ nav }}" data-nav="profil" style="padding:9px 12px;border:none;border-radius:999px;background:transparent;color:rgba(245,240,230,.6);font-size:11px;font-weight:700;cursor:pointer">Profil</button>
+<button onClick="{{ nav }}" data-nav="waktu" style="padding:9px 12px;border:none;border-radius:999px;background:transparent;color:rgba(245,240,230,.6);font-size:11px;font-weight:700;cursor:pointer">Waktu</button>
+<button onClick="{{ nav }}" data-nav="acara" style="padding:9px 12px;border:none;border-radius:999px;background:transparent;color:rgba(245,240,230,.6);font-size:11px;font-weight:700;cursor:pointer">Acara</button>
+<button onClick="{{ nav }}" data-nav="galeri" style="padding:9px 12px;border:none;border-radius:999px;background:transparent;color:rgba(245,240,230,.6);font-size:11px;font-weight:700;cursor:pointer">Galeri</button>
+<button onClick="{{ nav }}" data-nav="ucapan" style="padding:9px 12px;border:none;border-radius:999px;background:var(--acc,#F2B927);color:#0F1B2D;font-size:11px;font-weight:700;cursor:pointer">Ucapan</button>
+</div>
+
+</div></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#F2B927&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#F2B927&quot;,&quot;#C4462F&quot;,&quot;#1F5F5B&quot;,&quot;#4C6EF5&quot;],&quot;section&quot;:&quot;Tampilan&quot;},&quot;showRundown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;showGift&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;musicEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Interaksi&quot;}}">
+class Component extends DCLogic {
+  state = { coverOn: true, now: Date.now(), wishes: [], fName: '', fMsg: '', att: 'Datang', musicOn: false, torn: false, stamped: false, packed: [], sending: false, offline: false, content: {} };
+
+  POS = [[8, 14, -6], [50, 10, 5], [27, 38, -3], [55, 54, 7], [10, 60, 4], [33, 76, -8]];
+
+  SB = 'https://djzzayvisldfuczhqmjb.supabase.co/rest/v1';
+  SB_KEY = 'sb_publishable_wUaCUiEJPdZ1ahVAX-6cUQ_-BbooIiz';
+  TOK_KEY = 'tandika_kpa_owner_token_v1';
+  TARGET = new Date('2026-08-23T08:00:00+07:00').getTime();
+
+  // Token rahasia per-perangkat. Dikirim waktu menulis ucapan, dan cuma
+  // dipakai lagi untuk menghapus ucapan sendiri. Kolomnya tidak bisa
+  // dibaca siapa pun lewat API, jadi ucapan orang lain aman.
+  token() {
+    if (this._tok) return this._tok;
+    let t = null;
+    try { t = localStorage.getItem(this.TOK_KEY); } catch (e) {}
+    if (!t) {
+      t = (crypto.randomUUID && crypto.randomUUID()) ||
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+      try { localStorage.setItem(this.TOK_KEY, t); } catch (e) {}
+    }
+    this._tok = t;
+    return t;
+  }
+
+  // Daftar id ucapan milik perangkat ini — dipakai untuk memunculkan
+  // tombol hapus hanya di kartu sendiri.
+  mine() {
+    if (this._mine) return this._mine;
+    try { this._mine = JSON.parse(localStorage.getItem(this.TOK_KEY + '_ids')) || []; }
+    catch (e) { this._mine = []; }
+    return this._mine;
+  }
+
+  addMine(id) {
+    this._mine = [id].concat(this.mine());
+    try { localStorage.setItem(this.TOK_KEY + '_ids', JSON.stringify(this._mine)); } catch (e) {}
+  }
+
+  dropMine(id) {
+    this._mine = this.mine().filter(x => x !== id);
+    try { localStorage.setItem(this.TOK_KEY + '_ids', JSON.stringify(this._mine)); } catch (e) {}
+  }
+
+  // Foto & teks yang diatur lewat panel admin. Hasilnya masuk state, bukan
+  // ditempel ke DOM — halaman ini re-render tiap detik karena jam berjalan,
+  // jadi apa pun yang ditempel langsung ke DOM pasti ketimpa.
+  loadContent = () => {
+    return fetch(this.SB + '/content?select=key,value', { headers: { apikey: this.SB_KEY } })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(rows => {
+        if (!Array.isArray(rows)) return;
+        const content = {};
+        rows.forEach(r => { content[r.key] = r.value || ''; });
+        this.setState({ content });
+      })
+      .catch(() => {});
+  };
+
+  // Ambil semua ucapan. owner_token sengaja tidak diminta — memang tidak
+  // di-grant ke publik, jadi 'select=*' akan ditolak server.
+  loadWishes = () => {
+    return fetch(this.SB + '/wishes?select=id,name,msg,att,created_at&order=created_at.desc', {
+      headers: { apikey: this.SB_KEY }
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(rows => {
+        if (!Array.isArray(rows)) return;
+        this.setState({ wishes: rows, offline: false });
+      })
+      .catch(() => { this.setState({ offline: true }); });
+  };
+
+  componentDidMount() {
+    this.applyAccent();
+    this.loadContent();
+    this.loadWishes();
+    // Polling ringan supaya ucapan yang masuk dari HP lain ikut muncul
+    // saat sesi 09.00 tanpa perlu refresh. Berhenti kalau tab disembunyikan.
+    this.tick = 0;
+    this.poll = setInterval(() => {
+      if (document.hidden) return;
+      this.loadWishes();
+      // Konten jauh lebih jarang berubah daripada ucapan, tapi tetap perlu
+      // ikut tersegarkan — kalau foto diunggah lewat panel admin saat acara
+      // berjalan, layar yang sudah terbuka ikut berubah tanpa perlu refresh.
+      if (++this.tick % 6 === 0) this.loadContent();
+    }, 8000);
+    this.onVis = () => { if (!document.hidden) { this.loadWishes(); this.loadContent(); } };
+    document.addEventListener('visibilitychange', this.onVis);
+    try {
+      const p = new URLSearchParams(location.search).get('from');
+      if (p) { const el = document.getElementById('fromWho'); if (el) el.textContent = p; }
+    } catch (e) {}
+    this.timer = setInterval(() => {
+      if (this.audio && !this.audio.paused) { try { localStorage.setItem('tandika_music_pos', String(this.audio.currentTime)); } catch (e) {} }
+      this.setState({ now: Date.now() });
+    }, 1000);
+    this.lock(true);
+    this.io = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'none'; this.io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    this.io2 = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) this.markNav(e.target.getAttribute('data-sec')); });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    this.scan();
+    document.querySelectorAll('[data-sec]').forEach(s => this.io2.observe(s));
+    this.onScroll = () => {
+      if (this._raf) return;
+      this._raf = requestAnimationFrame(() => {
+        this._raf = null;
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = h > 0 ? Math.min(100, Math.max(0, (window.scrollY / h) * 100)) : 0;
+        const bar = document.getElementById('progBar'), pl = document.getElementById('progPlane');
+        if (bar) bar.style.width = pct + '%';
+        if (pl) pl.style.left = 'calc(' + pct + '% - 9px)';
+      });
+    };
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.initCanvas();
+    setTimeout(() => this.initScratch(), 400);
+  }
+
+  initScratch() {
+    const c = document.getElementById('scr');
+    if (!c || c._init) return;
+    const p = c.parentElement, w = p.clientWidth, h = p.clientHeight;
+    if (!w || !h) { setTimeout(() => this.initScratch(), 500); return; }
+    c._init = 1;
+    const d = window.devicePixelRatio || 1;
+    c.width = w * d; c.height = h * d;
+    const x = c.getContext('2d');
+    x.scale(d, d);
+    x.fillStyle = '#C9C2B2'; x.fillRect(0, 0, w, h);
+    x.fillStyle = 'rgba(15,27,45,.08)';
+    for (let i = 0; i < 40; i++) x.fillRect(Math.random() * w, Math.random() * h, 2, 2);
+    x.save(); x.translate(w / 2, h / 2); x.rotate(-0.08);
+    x.fillStyle = 'rgba(15,27,45,.35)'; x.font = "700 11px 'Space Mono',monospace"; x.textAlign = 'center';
+    for (let r = -2; r <= 2; r++) x.fillText('KEROK PAKAI JARI · KEROK PAKAI JARI', 0, r * 26 + 4);
+    x.restore();
+    this._scx = x; this._scn = 0;
+  }
+
+  scrDown = (e) => { e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId); this._scd = true; this.scrape(e); };
+  scrMove = (e) => { if (this._scd) this.scrape(e); };
+  scrUp = () => { this._scd = false; };
+
+  scrape(e) {
+    const x = this._scx; if (!x) return;
+    const c = e.currentTarget, r = c.getBoundingClientRect();
+    x.globalCompositeOperation = 'destination-out';
+    x.beginPath(); x.arc(e.clientX - r.left, e.clientY - r.top, 21, 0, 7); x.fill();
+    this._scn++;
+    if (this._scn > 55) { c.style.transition = 'opacity .7s'; c.style.opacity = '0'; c.style.pointerEvents = 'none'; if (!this._scT) { this._scT = 1; this.toast('Pesan rahasia kebuka'); } }
+  }
+
+  tilt = (e) => {
+    if (e.pointerType === 'touch') return;
+    const el = e.currentTarget, r = el.getBoundingClientRect();
+    const rx = ((e.clientY - r.top) / r.height - 0.5) * -5, ry = ((e.clientX - r.left) / r.width - 0.5) * 6;
+    el.style.transition = 'transform .12s ease-out';
+    el.style.transform = 'perspective(800px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+  };
+  untilt = (e) => { const el = e.currentTarget; el.style.transition = 'transform .5s ease'; el.style.transform = 'none'; };
+
+  tearDown = (e) => { const el = e.currentTarget; el.setPointerCapture && el.setPointerCapture(e.pointerId); el._sx = e.clientX; el._dx = 0; el.style.transition = 'none'; el.style.cursor = 'grabbing'; };
+  tearMove = (e) => {
+    const el = e.currentTarget; if (el._sx == null) return;
+    let dx = e.clientX - el._sx; if (dx < 0) dx *= 0.25;
+    el._dx = dx;
+    el.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx / 45) + 'deg)';
+    el.style.opacity = String(Math.max(.25, 1 - dx / 300));
+  };
+  tearUp = (e) => {
+    const el = e.currentTarget; if (el._sx == null) return;
+    const dx = el._dx || 0; el._sx = null; el.style.cursor = 'grab';
+    if (dx > 110) {
+      el.style.transition = 'transform .35s ease,opacity .35s ease';
+      el.style.transform = 'translateX(150%) rotate(12deg)'; el.style.opacity = '0';
+      this.burst(26); this.toast('Sobekan tiket kamu kantongi');
+      setTimeout(() => this.setState({ torn: true }), 380);
+    } else {
+      el.style.transition = 'transform .3s ease,opacity .3s ease';
+      el.style.transform = 'none'; el.style.opacity = '1';
+    }
+  };
+
+  pack = (e) => {
+    const n = e.currentTarget.getAttribute('data-n'), b = e.currentTarget;
+    const packed = this.state.packed.slice(), i = packed.indexOf(n);
+    if (i >= 0) { packed.splice(i, 1); b.style.opacity = '1'; b.style.background = '#FBF8F1'; b.style.textDecoration = 'none'; }
+    else { packed.push(n); b.style.opacity = '.5'; b.style.background = 'rgba(15,27,45,.07)'; b.style.textDecoration = 'line-through'; }
+    this.setState({ packed });
+    if (packed.length === 6) { this.burst(55); this.toast('Koper siap terbang!'); }
+  };
+
+  stampDown = (e) => {
+    if (this.state.stamped) return;
+    const b = e.currentTarget; b.style.background = 'rgba(196,70,47,.12)';
+    this._hold = setTimeout(() => { this.setState({ stamped: true }); this.burst(34); this.toast('Restu resmi dicap'); }, 650);
+  };
+  stampUp = (e) => { clearTimeout(this._hold); e.currentTarget.style.background = 'transparent'; };
+
+  componentDidUpdate(prev) { if (prev.accent !== this.props.accent) this.applyAccent(); this.scan(); }
+
+  componentWillUnmount() {
+    clearInterval(this.timer); clearInterval(this.bar); clearInterval(this.poll); clearTimeout(this._hold);
+    document.removeEventListener('visibilitychange', this.onVis);
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onResize);
+    if (this.io) this.io.disconnect(); if (this.io2) this.io2.disconnect();
+    if (this.audio) this.audio.pause();
+    this.lock(false);
+  }
+
+  applyAccent() { document.documentElement.style.setProperty('--acc', this.props.accent || '#F2B927'); }
+
+  scan() {
+    if (!this.io) return;
+    document.querySelectorAll('[data-reveal]:not([data-obs])').forEach(el => { el.setAttribute('data-obs', '1'); this.io.observe(el); });
+  }
+
+  lock(on) {
+    document.body.style.overflow = on ? 'hidden' : '';
+    document.documentElement.style.overflow = on ? 'hidden' : '';
+  }
+
+  markNav(id) {
+    if (!id || this._nav === id) return;
+    this._nav = id;
+    document.querySelectorAll('[data-nav]').forEach(b => {
+      const on = b.getAttribute('data-nav') === id;
+      b.style.color = on ? '#0F1B2D' : 'rgba(245,240,230,.6)';
+      b.style.background = on ? (this.props.accent || '#F2B927') : 'transparent';
+    });
+  }
+
+  nav = (e) => {
+    const id = e.currentTarget.getAttribute('data-nav');
+    const el = document.querySelector('[data-sec="' + id + '"]');
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 2, behavior: 'smooth' });
+  };
+
+  openInvite = () => {
+    const c = document.getElementById('cover');
+    if (c) { c.style.transform = 'translate(-50%,-104%)'; c.style.opacity = '0'; }
+    this.lock(false);
+    if (this.props.musicEnabled !== false) this.startMusic();
+    this.burst(46);
+    setTimeout(() => this.setState({ coverOn: false }), 950);
+  };
+
+  /* ---------- music: uploads "MYC Ke NYC" ---------- */
+  startMusic() {
+    try {
+      if (!this.audio) {
+        // yang diunggah lewat panel menang; assets/ jadi cadangan
+        this.audio = new Audio(this.state.content['musik.latar'] || 'assets/myc-ke-nyc.mp3');
+        this.audio.loop = true;
+        this.audio.volume = 0.9;
+        try {
+          const t = parseFloat(localStorage.getItem('tandika_music_pos'));
+          if (isFinite(t) && t > 0) this.audio.currentTime = t;
+        } catch (e) {}
+      }
+      const p = this.audio.play();
+      if (p && p.catch) p.catch(() => this.setState({ musicOn: false }));
+      this.setState({ musicOn: true });
+    } catch (e) {}
+  }
+
+  toggleMusic = () => {
+    if (this.state.musicOn) { if (this.audio) this.audio.pause(); this.setState({ musicOn: false }); }
+    else this.startMusic();
+  };
+
+  /* ---------- confetti ---------- */
+  initCanvas() {
+    const c = document.getElementById('cfx');
+    if (!c) return;
+    this.cv = c; this.p = [];
+    const fit = () => {
+      const d = window.devicePixelRatio || 1;
+      c.width = c.clientWidth * d; c.height = c.clientHeight * d;
+      c.getContext('2d').setTransform(d, 0, 0, d, 0, 0);
+    };
+    fit(); this.onResize = fit;
+    window.addEventListener('resize', fit);
+  }
+
+  burst(n) {
+    if (!this.cv) return;
+    const w = this.cv.clientWidth, cols = [this.props.accent || '#F2B927', '#C4462F', '#F5F0E6', '#1F5F5B', '#0F1B2D'];
+    for (let i = 0; i < n; i++) this.p.push({
+      x: w / 2 + (Math.random() - 0.5) * w * 0.6, y: this.cv.clientHeight * 0.42,
+      vx: (Math.random() - 0.5) * 7, vy: -Math.random() * 9 - 3,
+      s: 4 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4,
+      c: cols[(Math.random() * cols.length) | 0], life: 90 + Math.random() * 50
+    });
+    if (!this.loop) this.tick();
+  }
+
+  tick() {
+    const ctx = this.cv.getContext('2d');
+    this.loop = requestAnimationFrame(() => this.tick());
+    ctx.clearRect(0, 0, this.cv.clientWidth, this.cv.clientHeight);
+    this.p = this.p.filter(q => q.life > 0 && q.y < this.cv.clientHeight + 40);
+    this.p.forEach(q => {
+      q.life--; q.vy += 0.19; q.vx *= 0.995; q.x += q.vx; q.y += q.vy; q.r += q.vr;
+      ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(q.r); ctx.globalAlpha = Math.max(0, Math.min(1, q.life / 40));
+      ctx.fillStyle = q.c; ctx.fillRect(-q.s / 2, -q.s / 4, q.s, q.s / 2); ctx.restore();
+    });
+    if (!this.p.length) { cancelAnimationFrame(this.loop); this.loop = null; ctx.clearRect(0, 0, this.cv.clientWidth, this.cv.clientHeight); }
+  }
+
+  toast(msg) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg; t.style.opacity = '1'; t.style.transform = 'translate(-50%,0)';
+    clearTimeout(this._tt);
+    this._tt = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%,16px)'; }, 2300);
+  }
+
+  /* ---------- form ---------- */
+  setName = (e) => this.setState({ fName: e.target.value });
+  setMsg = (e) => this.setState({ fMsg: e.target.value });
+  chip = (e) => this.setState({ fMsg: e.currentTarget.getAttribute('data-t') });
+
+  setAtt = (e) => {
+    const v = e.currentTarget.getAttribute('data-v');
+    this.setState({ att: v });
+    document.querySelectorAll('[data-att]').forEach(b => {
+      const on = b.getAttribute('data-att') === v;
+      b.style.background = on ? '#F5F0E6' : 'transparent';
+      b.style.color = on ? '#0F1B2D' : 'rgba(245,240,230,.6)';
+    });
+  };
+
+  submitWish = () => {
+    if (this.state.sending) return;
+    const name = (this.state.fName || '').trim(), msg = (this.state.fMsg || '').trim();
+    if (!name) { this.toast('Isi nama kamu dulu'); return; }
+    if (msg.length < 2) { this.toast('Ucapannya minimal 2 karakter'); return; }
+    this.setState({ sending: true });
+    fetch(this.SB + '/wishes?select=id,name,msg,att,created_at', {
+      method: 'POST',
+      headers: { apikey: this.SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+      body: JSON.stringify({ name, msg, att: this.state.att, owner_token: this.token() })
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(rows => {
+        const w = rows && rows[0];
+        if (!w) throw new Error('balasan kosong');
+        this.addMine(w.id);
+        this.setState({ wishes: [w].concat(this.state.wishes), fName: '', fMsg: '', sending: false, offline: false });
+        this.burst(60); this.toast('Ucapan terkirim untuk Tandika');
+      })
+      .catch(() => {
+        this.setState({ sending: false });
+        this.toast('Gagal kirim — cek koneksi, lalu coba lagi');
+      });
+  };
+
+  // Hapus lewat RPC: server yang mencocokkan token, jadi ucapan orang
+  // lain tidak bisa dihapus walaupun id-nya kelihatan.
+  del = (e) => {
+    const id = e.currentTarget.getAttribute('data-id');
+    fetch(this.SB + '/rpc/delete_wish', {
+      method: 'POST',
+      headers: { apikey: this.SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_id: id, p_token: this.token() })
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(ok => {
+        if (!ok) { this.toast('Ucapan ini bukan dari perangkat kamu'); return; }
+        this.dropMine(id);
+        this.setState({ wishes: this.state.wishes.filter(w => w.id !== id) });
+      })
+      .catch(() => this.toast('Gagal hapus — cek koneksi'));
+  };
+
+  // Stiker itu hiasan, bukan isi. Kalau berkasnya belum ada di assets/,
+  // sembunyikan saja — ikon gambar rusak jauh lebih jelek daripada kotak
+  // kosong, dan keterangan di bawah stiker galeri tetap kebaca.
+  imgRusak = (e) => { e.currentTarget.style.visibility = 'hidden'; };
+
+  // Pasangannya, dan ini wajib ada: waktu halaman pertama dibuka, konten
+  // dari panel belum sempat datang, jadi src-nya masih cadangan assets/
+  // yang bisa jadi 404 dan langsung disembunyikan imgRusak. Begitu URL
+  // hasil unggahan masuk dan gambarnya berhasil dimuat, sembunyiannya
+  // harus dicabut lagi — tanpa ini stiker yang diunggah lewat panel tidak
+  // akan pernah muncul.
+  imgOk = (e) => { e.currentTarget.style.visibility = ''; };
+
+  balloon = () => { this.burst(70); this.toast('Doa terbang ke New York'); };
+
+  addToCal = () => {
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//KPA//Pelepasan Tandika//ID', 'BEGIN:VEVENT',
+      'UID:kpa-2308-tandika@kpa', 'DTSTAMP:20260815T000000Z', 'DTSTART:20260823T010000Z', 'DTEND:20260823T050000Z',
+      'SUMMARY:Pelepasan Tandika - From MYC Straight to NYC',
+      'DESCRIPTION:Kumpul pelepasan Tandika Nisaa bersama anggota Bidang KPA. Bawa cerita dan ucapan.',
+      'LOCATION:Anjungan Sulawesi, TMII, Jakarta', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = 'pelepasan-tandika-23agt2026.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    this.toast('File kalender diunduh');
+  };
+
+  copy = (e) => {
+    const btn = e.currentTarget, val = btn.getAttribute('data-copy');
+    const done = () => { const o = btn.textContent; btn.textContent = 'Tersalin'; setTimeout(() => { btn.textContent = o; }, 1600); this.toast('Nomor disalin'); };
+    if (navigator.clipboard) navigator.clipboard.writeText(val).then(done).catch(done);
+    else done();
+  };
+
+  flip = (e) => {
+    const inner = e.currentTarget.firstElementChild;
+    if (!inner) return;
+    const on = inner.getAttribute('data-f') === '1';
+    inner.setAttribute('data-f', on ? '0' : '1');
+    inner.style.transform = on ? 'rotateY(0deg)' : 'rotateY(180deg)';
+  };
+
+  pad(n) { return n < 10 ? '0' + n : String(n); }
+
+  clock(tz) {
+    try { return new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(this.state.now)); }
+    catch (e) { return '--:--'; }
+  }
+
+  // Nilai dari tabel content, dengan cadangan teks asli halaman supaya
+  // tampilan tetap utuh sebelum fetch selesai atau kalau servernya sedang
+  // tidak bisa dihubungi.
+  contentVals() {
+    const c = (k, cadangan) => {
+      const v = this.state.content[k];
+      return (v === undefined || v === '') ? (cadangan || '') : v;
+    };
+    const rekNomor = c('teks.rekening.nomor', '');
+    // Stiker bercadangan dua lapis: yang diunggah lewat panel admin menang,
+    // kalau belum ada dipakai berkas lokal di assets/, dan kalau itu pun
+    // tidak ada gambarnya disembunyikan sendiri lewat onError.
+    const stk = n => c('stiker.' + n, 'assets/stk-' + n + '.png');
+    return {
+      stkStreet: stk('street'), stkMap:    stk('map'),    stkCoffee: stk('coffee'),
+      stkSofa:   stk('sofa'),   stkDino:   stk('dino'),   stkZoo:    stk('zoo'),
+      stkYogurt: stk('yogurt'), stkEmpire: stk('empire'), stkGhost:  stk('ghost'),
+      stkSpider: stk('spider'),
+
+      fotoPortrait: c('foto.tandika-portrait'),
+      fotoG1: c('foto.kpa-g1'), fotoG2: c('foto.kpa-g2'), fotoG3: c('foto.kpa-g3'),
+      fotoG4: c('foto.kpa-g4'), fotoG5: c('foto.kpa-g5'), fotoWide: c('foto.kpa-wide'),
+
+      galeri1: c('teks.galeri.1', '01 · SATU BIDANG'),
+      galeri2: c('teks.galeri.2', '02 · MUSIM ANGGARAN'),
+      galeri3: c('teks.galeri.3', '03 · TRAKTIRAN'),
+      galeri4: c('teks.galeri.4', '04 · TIM INTI'),
+      galeri5: c('teks.galeri.5', '05 · DINAS LUAR'),
+
+      rekBank: c('teks.rekening.bank', 'KAS PELEPASAN BIDANG KPA'),
+      rekNama: c('teks.rekening.nama', 'Bendahara Bidang'),
+      rekNomor: rekNomor || '0000 1111 2222',
+      // yang disalin ke clipboard: tanpa spasi/strip, biar langsung bisa ditempel
+      rekNomorRaw: (rekNomor || '0000 1111 2222').replace(/[^0-9]/g, ''),
+      // catatan "ini masih contoh" hilang sendiri begitu nomor asli diisi
+      rekMasihContoh: !rekNomor,
+
+      bio: c('teks.profil.bio', 'Kawan sebidang kita segera terbang ke New York untuk lanjut studi. Sebelum berangkat, kami satu bidang nitip kesan, harapan, dan doa di kartu ini.'),
+      catatanJam: c('teks.profil.catatan', 'beda 11 jam — inget itu pas nanti janjian nelpon')
+    };
+  }
+
+  renderVals() {
+    const diff = this.TARGET - this.state.now, over = diff <= 0, s = Math.max(0, Math.floor(diff / 1000));
+    const mine = this.mine();
+    const wishes = this.state.wishes.map((w, i) => {
+      const d = new Date(w.created_at);
+      return { id: w.id, name: w.name, msg: w.msg, att: w.att,
+        canDel: mine.indexOf(w.id) !== -1,
+        initial: (w.name || '?').trim().charAt(0).toUpperCase(),
+        rot: ['-1.2deg', '0.9deg', '-0.5deg', '1.4deg'][i % 4],
+        when: this.pad(d.getDate()) + '/' + this.pad(d.getMonth() + 1) + ' · ' + this.pad(d.getHours()) + ':' + this.pad(d.getMinutes()),
+        attColor: w.att === 'Datang' ? '#1F5F5B' : '#C4462F' };
+    });
+    return {
+      coverOn: this.state.coverOn,
+      showRundown: this.props.showRundown !== false,
+      showGift: this.props.showGift !== false,
+      musicLabel: this.state.musicOn ? 'MUSIK ON' : 'MUSIK OFF',
+      cd: { d: this.pad(Math.floor(s / 86400)), h: this.pad(Math.floor(s / 3600) % 24), m: this.pad(Math.floor(s / 60) % 60), s: this.pad(s % 60) },
+      cdNote: over ? 'Acaranya sudah jalan — langsung gabung di Anjungan Sulawesi, TMII.' : 'Minggu, 23 Agustus 2026 · 08:00 WIB · Anjungan Sulawesi, TMII',
+      clockJkt: this.clock('Asia/Jakarta'),
+      clockNyc: this.clock('America/New_York'),
+      wishes, noWishes: wishes.length === 0,
+      ...this.contentVals(),
+      sendLabel: this.state.sending ? 'Mengirim…' : 'Kirim Ucapan',
+      offline: this.state.offline,
+      nWishes: wishes.length,
+      nHadir: wishes.filter(w => w.att === 'Datang').length,
+      nAbsen: wishes.filter(w => w.att === 'Absen').length,
+      fName: this.state.fName, fMsg: this.state.fMsg,
+      torn: this.state.torn, notTorn: !this.state.torn,
+      stamped: this.state.stamped, stampLabel: this.state.stamped ? 'Restu tercap!' : 'Tahan: Cap Restu',
+      packed: this.state.packed.map((n, i) => { const p = this.POS[i % 6]; return { name: n, l: p[0] + '%', t: p[1] + '%', rot: p[2] + 'deg' }; }),
+      nPacked: this.state.packed.length,
+      tilt: this.tilt, untilt: this.untilt, tearDown: this.tearDown, tearMove: this.tearMove, tearUp: this.tearUp,
+      pack: this.pack, stampDown: this.stampDown, stampUp: this.stampUp,
+      scrDown: this.scrDown, scrMove: this.scrMove, scrUp: this.scrUp,
+      openInvite: this.openInvite, toggleMusic: this.toggleMusic, addToCal: this.addToCal,
+      setName: this.setName, setMsg: this.setMsg, setAtt: this.setAtt, chip: this.chip,
+      submitWish: this.submitWish, del: this.del, flip: this.flip, nav: this.nav, copy: this.copy, balloon: this.balloon,
+      imgRusak: this.imgRusak, imgOk: this.imgOk
+    };
+  }
+}
+</script>
+</body>
+</html>

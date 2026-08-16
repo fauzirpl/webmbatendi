@@ -1,0 +1,12 @@
+# Repo ini di-build di Linux (Vercel) tapi dikerjakan di Windows.
+# Simpan semua teks dengan LF di dalam repo supaya diff-nya tidak ribut
+# gara-gara akhir baris.
+* text=auto eol=lf
+
+# Biner: jangan diutak-atik sama sekali
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.mp3 binary

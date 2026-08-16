@@ -1,0 +1,6 @@
+# dist/ dibangun ulang di Vercel lewat `node build.js`, tidak perlu diunggah
+dist/
+node_modules/
+.claude/
+serve.js
+README.md
