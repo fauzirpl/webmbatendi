@@ -73,7 +73,7 @@ textarea{resize:none}
 <div style="position:absolute;inset:-9px;border:1px solid rgba(15,27,45,.16);border-radius:50%"></div>
 <div style="position:absolute;top:-13px;left:50%;margin-left:-46px;width:92px;height:22px;background:rgba(242,185,39,.55);border-radius:2px;transform:rotate(-5deg);z-index:2;pointer-events:none"></div>
 <div style="position:absolute;left:-74px;top:30px;width:66px;font-family:Caveat,cursive;font-size:17px;line-height:1.1;color:#C4462F;transform:rotate(-9deg);pointer-events:none">itu dia →</div>
-<image-slot id="tandika-portrait" src="{{ fotoPortrait }}" style="width:172px;height:172px" shape="circle" placeholder="Foto Tandika"></image-slot>
+<image-slot id="tandika-portrait" src="{{ fotoPortrait }}" style="width:172px;height:172px" shape="circle" placeholder="Foto Tandika"></image-slot><div onClick="{{ bukaFoto }}" data-foto="foto.tandika-portrait" title="Lihat foto" style="position:absolute;inset:0;cursor:zoom-in;border-radius:50%;z-index:3"></div>
 <div style="position:absolute;bottom:-6px;right:-12px;width:74px;height:74px;border-radius:50%;background:#C4462F;color:#F5F0E6;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;line-height:1.5;text-align:center;animation:floaty 6s ease-in-out infinite;box-shadow:0 8px 20px rgba(196,70,47,.3);pointer-events:none">COLUMBIA<br>'26</div>
 </div>
 <h1 data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1) .14s,transform .7s cubic-bezier(.2,.7,.2,1) .14s;margin:20px 0 0;font-family:Anton,Impact,sans-serif;font-size:44px;line-height:.94;text-transform:uppercase;color:#0F1B2D;text-shadow:3px 3px 0 rgba(242,185,39,.5)">Tandika<br>Nisaa Utami</h1>
@@ -226,7 +226,7 @@ textarea{resize:none}
 <h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Bocoran Hidup di NYC</h2>
 <div style="margin-top:7px;font-family:Caveat,cursive;font-size:18px;color:rgba(15,27,45,.6);transform:rotate(-1deg)">100% belum terjadi, 100% bakal kejadian</div>
 </div>
-<div style="margin-top:16px;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 22px 10px;-webkit-overflow-scrolling:touch">
+<div style="margin-top:16px;display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scroll-padding-left:22px;scroll-padding-right:22px;padding:6px 22px 10px;-webkit-overflow-scrolling:touch">
 <div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkStreet }}" alt="Tandika jalan di Brooklyn" style="max-width:100%;max-height:192px;transform:rotate(-3deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">hari pertama: sok santai, padahal nyasar</div></div>
 <div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkMap }}" alt="Tandika baca peta di salju" style="max-width:100%;max-height:192px;transform:rotate(2.5deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">musim dingin pertama, masih percaya peta kertas</div></div>
 <div style="flex:none;width:200px;scroll-snap-align:center;text-align:center"><div style="height:192px;display:flex;align-items:center;justify-content:center"><img onError="{{ imgRusak }}" onLoad="{{ imgOk }}" src="{{ stkCoffee }}" alt="Tandika borong kopi" style="max-width:100%;max-height:192px;transform:rotate(-2deg)"></div><div style="margin-top:5px;font-family:Caveat,cursive;font-size:16.5px;line-height:1.15;color:rgba(15,27,45,.7)">niat beli satu kopi, pulang bawa tiga</div></div>
@@ -287,16 +287,16 @@ textarea{resize:none}
 <h2 style="margin:8px 0 0;font-family:Anton,sans-serif;font-size:30px;text-transform:uppercase;color:#0F1B2D;line-height:1">Galeri Kenangan</h2>
 <div style="margin-top:7px;font-size:12px;line-height:1.6;color:rgba(15,27,45,.55)">Geser ke samping untuk lihat semuanya.</div>
 </div>
-<div style="margin-top:18px;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 22px 12px;-webkit-overflow-scrolling:touch">
-<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g1" src="{{ fotoG1 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Foto bareng KPA"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri1 }}</div></div>
-<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g2" src="{{ fotoG2 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Momen kerja/lembur"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri2 }}</div></div>
-<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g3" src="{{ fotoG3 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Makan-makan"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri3 }}</div></div>
-<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g4" src="{{ fotoG4 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Tandika &amp; tim"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri4 }}</div></div>
-<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g5" src="{{ fotoG5 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Kegiatan luar"></image-slot></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri5 }}</div></div>
+<div style="margin-top:18px;display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scroll-padding-left:22px;scroll-padding-right:22px;padding:4px 22px 12px;-webkit-overflow-scrolling:touch">
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g1" src="{{ fotoG1 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Foto bareng KPA"></image-slot><div onClick="{{ bukaFoto }}" data-foto="foto.kpa-g1" title="Lihat foto" style="position:absolute;inset:0;cursor:zoom-in;border-radius:14px;z-index:3"></div></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri1 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g2" src="{{ fotoG2 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Momen kerja/lembur"></image-slot><div onClick="{{ bukaFoto }}" data-foto="foto.kpa-g2" title="Lihat foto" style="position:absolute;inset:0;cursor:zoom-in;border-radius:14px;z-index:3"></div></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri2 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g3" src="{{ fotoG3 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Makan-makan"></image-slot><div onClick="{{ bukaFoto }}" data-foto="foto.kpa-g3" title="Lihat foto" style="position:absolute;inset:0;cursor:zoom-in;border-radius:14px;z-index:3"></div></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri3 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g4" src="{{ fotoG4 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Tandika &amp; tim"></image-slot><div onClick="{{ bukaFoto }}" data-foto="foto.kpa-g4" title="Lihat foto" style="position:absolute;inset:0;cursor:zoom-in;border-radius:14px;z-index:3"></div></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri4 }}</div></div>
+<div style="flex:none;width:196px;scroll-snap-align:center"><div style="position:relative;height:250px"><image-slot id="kpa-g5" src="{{ fotoG5 }}" style="width:196px;height:250px" shape="rounded" radius="14" placeholder="Kegiatan luar"></image-slot><div onClick="{{ bukaFoto }}" data-foto="foto.kpa-g5" title="Lihat foto" style="position:absolute;inset:0;cursor:zoom-in;border-radius:14px;z-index:3"></div></div><div style="margin-top:7px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(15,27,45,.5)">{{ galeri5 }}</div></div>
 </div>
 <div data-reveal style="opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;padding:0 22px">
 <div style="position:relative;padding:12px;background:#FBF8F1;border:1px solid rgba(15,27,45,.12);border-radius:16px;box-shadow:0 10px 24px rgba(15,27,45,.08)">
-<div style="position:relative;height:150px"><image-slot id="kpa-wide" src="{{ fotoWide }}" style="width:100%;height:150px" shape="rounded" radius="10" placeholder="Foto bareng satu bidang"></image-slot></div>
+<div style="position:relative;height:150px"><image-slot id="kpa-wide" src="{{ fotoWide }}" style="width:100%;height:150px" shape="rounded" radius="10" placeholder="Foto bareng satu bidang"></image-slot><div onClick="{{ bukaFoto }}" data-foto="foto.kpa-wide" title="Lihat foto" style="position:absolute;inset:0;cursor:zoom-in;border-radius:10px;z-index:3"></div></div>
 <div style="margin-top:10px;display:flex;align-items:baseline;justify-content:space-between;gap:10px"><div style="font-size:12px;font-weight:700;color:#0F1B2D">{{ galeriWideJudul }}</div><div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:rgba(15,27,45,.45)">{{ galeriWideLabel }}</div></div>
 </div>
 </div>
@@ -455,10 +455,34 @@ textarea{resize:none}
 <button onClick="{{ nav }}" data-nav="ucapan" style="padding:9px 12px;border:none;border-radius:999px;background:var(--acc,#F2B927);color:#0F1B2D;font-size:11px;font-weight:700;cursor:pointer">Ucapan</button>
 </div>
 
+<sc-if value="{{ lbBuka }}">
+<div onClick="{{ tutupFoto }}" onTouchStart="{{ lbTouchStart }}" onTouchEnd="{{ lbTouchEnd }}" style="position:fixed;inset:0;z-index:200;background:rgba(6,11,19,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 16px 76px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)">
+
+<div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;pointer-events:none">
+<div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;color:rgba(245,240,230,.5)">{{ lbPosisi }}</div>
+<button onClick="{{ tutupFoto }}" aria-label="Tutup" style="pointer-events:auto;width:38px;height:38px;border:none;border-radius:50%;background:rgba(245,240,230,.12);color:#F5F0E6;font-size:19px;line-height:1;cursor:pointer">&times;</button>
+</div>
+
+<img onClick="{{ tahanKlik }}" src="{{ lbUrl }}" alt="{{ lbJudul }}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;box-shadow:0 22px 60px rgba(0,0,0,.6)">
+
+<div style="position:absolute;left:0;right:0;bottom:0;padding:16px;text-align:center;pointer-events:none">
+<div style="font-size:13px;line-height:1.5;color:rgba(245,240,230,.85);text-wrap:pretty">{{ lbJudul }}</div>
+<sc-if value="{{ lbBanyak }}">
+<div style="margin-top:5px;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">GESER ATAU PAKAI PANAH</div>
+</sc-if>
+</div>
+
+<sc-if value="{{ lbBanyak }}">
+<button onClick="{{ fotoPrev }}" aria-label="Foto sebelumnya" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:none;border-radius:50%;background:rgba(245,240,230,.12);color:#F5F0E6;font-size:20px;line-height:1;cursor:pointer">&#8249;</button>
+<button onClick="{{ fotoNext }}" aria-label="Foto berikutnya" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:none;border-radius:50%;background:rgba(245,240,230,.12);color:#F5F0E6;font-size:20px;line-height:1;cursor:pointer">&#8250;</button>
+</sc-if>
+
+</div>
+</sc-if>
 </div></x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#F2B927&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#F2B927&quot;,&quot;#C4462F&quot;,&quot;#1F5F5B&quot;,&quot;#4C6EF5&quot;],&quot;section&quot;:&quot;Tampilan&quot;},&quot;showRundown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;showGift&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;musicEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Interaksi&quot;}}">
 class Component extends DCLogic {
-  state = { coverOn: true, now: Date.now(), wishes: [], fName: '', fMsg: '', att: 'Datang', musicOn: false, torn: false, stamped: false, packed: [], sending: false, offline: false, content: {}, rundown: null };
+  state = { coverOn: true, now: Date.now(), wishes: [], fName: '', fMsg: '', att: 'Datang', musicOn: false, torn: false, stamped: false, packed: [], sending: false, offline: false, content: {}, rundown: null, lb: -1 };
 
   // Cadangan kalau Supabase belum sempat menjawab atau sedang tak terjangkau.
   // Rundown kosong di halaman acara lebih buruk daripada rundown agak lama,
@@ -476,7 +500,21 @@ class Component extends DCLogic {
   SB = 'https://djzzayvisldfuczhqmjb.supabase.co/rest/v1';
   SB_KEY = 'sb_publishable_wUaCUiEJPdZ1ahVAX-6cUQ_-BbooIiz';
   TOK_KEY = 'tandika_kpa_owner_token_v1';
-  TARGET = new Date('2026-08-23T08:00:00+07:00').getTime();
+  // Keberangkatan Tandika ke New York — ini yang dihitung mundur.
+  // Acara pelepasannya sendiri 23 Agustus, seminggu sebelumnya.
+  TARGET = new Date('2026-08-30T07:00:00+07:00').getTime();
+
+  // Slot foto yang ikut masuk pratinjau, berikut judulnya. Slot yang belum
+  // diisi otomatis dilewati — tidak ada gunanya membuka pratinjau kosong.
+  FOTO_SLOT = [
+    { key: 'foto.tandika-portrait', judulDari: null,               judulTetap: 'Tandika Nisaa Utami' },
+    { key: 'foto.kpa-g1',           judulDari: 'teks.galeri.1',    judulTetap: '01 · SATU BIDANG' },
+    { key: 'foto.kpa-g2',           judulDari: 'teks.galeri.2',    judulTetap: '02 · MUSIM ANGGARAN' },
+    { key: 'foto.kpa-g3',           judulDari: 'teks.galeri.3',    judulTetap: '03 · TRAKTIRAN' },
+    { key: 'foto.kpa-g4',           judulDari: 'teks.galeri.4',    judulTetap: '04 · TIM INTI' },
+    { key: 'foto.kpa-g5',           judulDari: 'teks.galeri.5',    judulTetap: '05 · DINAS LUAR' },
+    { key: 'foto.kpa-wide',         judulDari: 'teks.galeri.wide.judul', judulTetap: 'Koleksi terbaik satu bidang.' }
+  ];
 
   // Token rahasia per-perangkat. Dikirim waktu menulis ucapan, dan cuma
   // dipakai lagi untuk menghapus ucapan sendiri. Kolomnya tidak bisa
@@ -603,6 +641,13 @@ class Component extends DCLogic {
       });
     };
     window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.onKey = (e) => {
+      if (this.state.lb < 0) return;
+      if (e.key === 'Escape') this.tutupFoto();
+      else if (e.key === 'ArrowLeft') this.geserFoto(-1);
+      else if (e.key === 'ArrowRight') this.geserFoto(1);
+    };
+    document.addEventListener('keydown', this.onKey);
     this.initCanvas();
     setTimeout(() => this.initScratch(), 400);
   }
@@ -692,6 +737,7 @@ class Component extends DCLogic {
   componentWillUnmount() {
     clearInterval(this.timer); clearInterval(this.bar); clearInterval(this.poll); clearTimeout(this._hold);
     document.removeEventListener('visibilitychange', this.onVis);
+    document.removeEventListener('keydown', this.onKey);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('resize', this.onResize);
     if (this.io) this.io.disconnect(); if (this.io2) this.io2.disconnect();
@@ -882,6 +928,50 @@ class Component extends DCLogic {
   // akan pernah muncul.
   imgOk = (e) => { e.currentTarget.style.visibility = ''; };
 
+  /* ---------- pratinjau foto ---------- */
+  // Daftar foto yang benar-benar ada isinya, urut seperti di halaman.
+  fotoTerisi() {
+    const c = this.state.content;
+    return this.FOTO_SLOT
+      .map(s => ({ key: s.key, url: c[s.key] || '',
+                   judul: (s.judulDari && c[s.judulDari]) || s.judulTetap }))
+      .filter(f => f.url);
+  }
+
+  bukaFoto = (e) => {
+    const key = e.currentTarget.getAttribute('data-foto');
+    const daftar = this.fotoTerisi();
+    const i = daftar.findIndex(f => f.key === key);
+    if (i < 0) return;              // slotnya masih kosong — jangan buka apa-apa
+    this.lock(true);
+    this.setState({ lb: i });
+  };
+
+  tutupFoto = () => { this.lock(false); this.setState({ lb: -1 }); };
+
+  geserFoto = (arah) => {
+    const n = this.fotoTerisi().length;
+    if (!n) return;
+    // memutar: dari terakhir lanjut ke pertama, biar tidak terasa buntu
+    this.setState({ lb: (this.state.lb + arah + n) % n });
+  };
+
+  fotoPrev = (e) => { if (e) e.stopPropagation(); this.geserFoto(-1); };
+  fotoNext = (e) => { if (e) e.stopPropagation(); this.geserFoto(1); };
+  // klik pada gambarnya sendiri tidak menutup — hanya latar gelapnya
+  tahanKlik = (e) => e.stopPropagation();
+
+  // Geser jari kiri/kanan untuk pindah foto, sama seperti galeri foto di HP.
+  lbTouchStart = (e) => { this._tx = e.touches[0].clientX; this._ty = e.touches[0].clientY; };
+  lbTouchEnd = (e) => {
+    if (this._tx == null) return;
+    const dx = e.changedTouches[0].clientX - this._tx;
+    const dy = e.changedTouches[0].clientY - this._ty;
+    this._tx = null;
+    // hanya dianggap geser kalau jelas mendatar, supaya tidak salah picu
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) this.geserFoto(dx < 0 ? 1 : -1);
+  };
+
   balloon = () => { this.burst(70); this.toast('Doa terbang ke New York'); };
 
   addToCal = () => {
@@ -969,7 +1059,28 @@ class Component extends DCLogic {
       rundownCatatan: c('teks.rundown.catatan', ''),
       adaRundownCatatan: !!c('teks.rundown.catatan', ''),
 
+      cdCatatan: c('teks.countdown.catatan', 'Minggu, 30 Agustus 2026 · 07:00 WIB · Tandika terbang ke New York'),
+      cdSelesai: c('teks.countdown.selesai', 'Tandika sudah terbang. Titip doa dari sini.'),
+
       ...this.rundownVals()
+    };
+  }
+
+  lightboxVals() {
+    const daftar = this.fotoTerisi();
+    const i = this.state.lb;
+    const buka = i >= 0 && i < daftar.length;
+    const f = buka ? daftar[i] : null;
+    return {
+      lbBuka: buka,
+      lbUrl: f ? f.url : '',
+      lbJudul: f ? f.judul : '',
+      lbPosisi: buka ? (i + 1) + ' / ' + daftar.length : '',
+      // tombol maju/mundur tidak ada gunanya kalau cuma satu foto
+      lbBanyak: daftar.length > 1,
+      bukaFoto: this.bukaFoto, tutupFoto: this.tutupFoto,
+      fotoPrev: this.fotoPrev, fotoNext: this.fotoNext, tahanKlik: this.tahanKlik,
+      lbTouchStart: this.lbTouchStart, lbTouchEnd: this.lbTouchEnd
     };
   }
 
@@ -988,6 +1099,7 @@ class Component extends DCLogic {
 
   renderVals() {
     const diff = this.TARGET - this.state.now, over = diff <= 0, s = Math.max(0, Math.floor(diff / 1000));
+    const cv = this.contentVals();
     const mine = this.mine();
     const wishes = this.state.wishes.map((w, i) => {
       const d = new Date(w.created_at);
@@ -1004,11 +1116,12 @@ class Component extends DCLogic {
       showGift: this.props.showGift !== false,
       musicLabel: this.state.musicOn ? 'MUSIK ON' : 'MUSIK OFF',
       cd: { d: this.pad(Math.floor(s / 86400)), h: this.pad(Math.floor(s / 3600) % 24), m: this.pad(Math.floor(s / 60) % 60), s: this.pad(s % 60) },
-      cdNote: over ? 'Acaranya sudah jalan — langsung gabung di Anjungan Sulawesi, TMII.' : 'Minggu, 23 Agustus 2026 · 08:00 WIB · Anjungan Sulawesi, TMII',
       clockJkt: this.clock('Asia/Jakarta'),
       clockNyc: this.clock('America/New_York'),
       wishes, noWishes: wishes.length === 0,
-      ...this.contentVals(),
+      ...cv,
+      ...this.lightboxVals(),
+      cdNote: over ? cv.cdSelesai : cv.cdCatatan,
       sendLabel: this.state.sending ? 'Mengirim…' : 'Kirim Ucapan',
       offline: this.state.offline,
       nWishes: wishes.length,

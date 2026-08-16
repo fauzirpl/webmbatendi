@@ -308,6 +308,9 @@ insert into public.content (key, label, kind, grp, urutan, value) values
   ('teks.rekening.nomor', 'Nomor rekening',  'teks', 'Rekening patungan', 2, ''),
   ('teks.rekening.nama',  'Atas nama',       'teks', 'Rekening patungan', 3, 'Bendahara Bidang'),
 
+  ('teks.countdown.catatan', 'Teks di bawah hitung mundur',      'teks', 'Hitung mundur', 1, 'Minggu, 30 Agustus 2026 · 07:00 WIB · Tandika terbang ke New York'),
+  ('teks.countdown.selesai', 'Teks setelah hitung mundur habis', 'teks', 'Hitung mundur', 2, 'Tandika sudah terbang. Titip doa dari sini.'),
+
   ('teks.rundown.status',  'Label status rundown (kosongkan kalau sudah fix)', 'teks', 'Rundown', 1, 'DRAFT'),
   ('teks.rundown.catatan', 'Catatan di bawah rundown (boleh dikosongkan)',     'teks', 'Rundown', 2, '*Masih draft — kabari kalau ada yang mau digeser.'),
 
