@@ -559,14 +559,18 @@ class Component extends DCLogic {
     this.loadWishes();
     // Polling ringan supaya ucapan yang masuk dari HP lain ikut muncul
     // saat sesi 09.00 tanpa perlu refresh. Berhenti kalau tab disembunyikan.
-    this.tick = 0;
+    // JANGAN dinamai this.tick — tick() itu metode animasi konfeti, dan
+    // properti dengan nama sama akan menimpanya (pernah terjadi: burst()
+    // jadi melempar TypeError di dalam blok sukses submitWish, sehingga
+    // ucapan tersimpan tapi yang muncul justru notif gagal).
+    this.pollN = 0;
     this.poll = setInterval(() => {
       if (document.hidden) return;
       this.loadWishes();
       // Konten jauh lebih jarang berubah daripada ucapan, tapi tetap perlu
       // ikut tersegarkan — kalau foto diunggah lewat panel admin saat acara
       // berjalan, layar yang sudah terbuka ikut berubah tanpa perlu refresh.
-      if (++this.tick % 6 === 0) { this.loadContent(); this.loadRundown(); }
+      if (++this.pollN % 6 === 0) { this.loadContent(); this.loadRundown(); }
     }, 8000);
     this.onVis = () => { if (!document.hidden) { this.loadWishes(); this.loadContent(); this.loadRundown(); } };
     document.addEventListener('visibilitychange', this.onVis);
@@ -835,7 +839,11 @@ class Component extends DCLogic {
         if (!w) throw new Error('balasan kosong');
         this.addMine(w.id);
         this.setState({ wishes: [w].concat(this.state.wishes), fName: '', fMsg: '', sending: false, offline: false });
-        this.burst(60); this.toast('Ucapan terkirim untuk Tandika');
+        // Konfeti itu hiasan. Kalau dia gagal, ucapannya tetap sudah masuk —
+        // jangan sampai errornya menetes ke .catch() dan bikin orang dikasih
+        // tahu "gagal kirim" padahal ucapannya sudah tersimpan.
+        try { this.burst(60); } catch (e) {}
+        this.toast('Ucapan terkirim untuk Tandika');
       })
       .catch(() => {
         this.setState({ sending: false });

@@ -218,6 +218,37 @@ function toast(pesan) {
   toastT = setTimeout(() => t.classList.remove('on'), 2600);
 }
 
+// navigator.clipboard butuh konteks aman (https atau localhost). Produksi
+// sudah https, tapi cadangannya tetap dipasang supaya tidak diam-diam gagal
+// kalau dibuka lewat http atau browser lama.
+async function salinKeClipboard(teks, tombol, labelAsli) {
+  let berhasil = false;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(teks);
+      berhasil = true;
+    }
+  } catch (e) {}
+  if (!berhasil) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = teks;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      berhasil = document.execCommand('copy');
+      ta.remove();
+    } catch (e) {}
+  }
+  if (tombol) {
+    tombol.textContent = berhasil ? 'Tersalin' : 'Gagal menyalin';
+    setTimeout(() => { tombol.textContent = labelAsli; }, 1600);
+  }
+  if (!berhasil) toast('Tidak bisa menyalin otomatis — salin manual dari kolomnya');
+  return berhasil;
+}
+
 function simpanSesi(s) {
   sesi = s;
   try { localStorage.setItem(SESI, JSON.stringify(s)); } catch (e) {}
@@ -582,6 +613,32 @@ function gambarTeks() {
       kartu.appendChild(inp);
 
       if (c.key === 'teks.rekening.nomor') {
+        const baris = el('div');
+        baris.style.cssText = 'display:flex;gap:8px;align-items:center;margin-top:9px;flex-wrap:wrap';
+
+        const salin = el('button', 'btn btn-ghost btn-sm');
+        salin.type = 'button';
+        salin.textContent = 'Salin nomor';
+        salin.addEventListener('click', () => {
+          // disalin tanpa spasi/strip, persis seperti yang didapat pengunjung
+          // waktu menekan tombol Copy di halaman
+          const angka = (inp.value || '').replace(/[^0-9]/g, '');
+          if (!angka) { toast('Nomornya masih kosong'); return; }
+          salinKeClipboard(angka, salin, 'Salin nomor');
+        });
+        baris.appendChild(salin);
+
+        const pratinjau = el('div');
+        pratinjau.style.cssText = "font-family:'Space Mono',monospace;font-size:11px;color:rgba(245,240,230,.45)";
+        const perbaruiPratinjau = () => {
+          const angka = (inp.value || '').replace(/[^0-9]/g, '');
+          pratinjau.textContent = angka ? 'tersalin sebagai: ' + angka : '';
+        };
+        perbaruiPratinjau();
+        inp.addEventListener('input', perbaruiPratinjau);
+        baris.appendChild(pratinjau);
+        kartu.appendChild(baris);
+
         const t = el('div', 'hint');
         t.textContent = 'Selama ini masih kosong, halaman menampilkan nomor contoh beserta catatan peringatannya. Catatan itu hilang sendiri begitu nomor asli diisi.';
         kartu.appendChild(t);
