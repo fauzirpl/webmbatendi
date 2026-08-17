@@ -308,6 +308,11 @@ insert into public.content (key, label, kind, grp, urutan, value) values
   ('teks.rekening.nomor', 'Nomor rekening',  'teks', 'Rekening patungan', 2, ''),
   ('teks.rekening.nama',  'Atas nama',       'teks', 'Rekening patungan', 3, 'Bendahara Bidang'),
 
+  ('teks.departures.flight', 'Papan Departures — FLIGHT', 'teks', 'Papan Departures', 1, 'KPA—3008'),
+  ('teks.departures.tujuan', 'Papan Departures — TUJUAN', 'teks', 'Papan Departures', 2, 'NEW YORK, USA'),
+  ('teks.departures.gate',   'Papan Departures — GATE',   'teks', 'Papan Departures', 3, 'JAKARTA — CGK'),
+  ('teks.departures.status', 'Papan Departures — STATUS', 'teks', 'Papan Departures', 4, 'ON TIME'),
+
   ('teks.countdown.catatan', 'Teks di bawah hitung mundur',      'teks', 'Hitung mundur', 1, 'Minggu, 30 Agustus 2026 · 07:00 WIB · Tandika terbang ke New York'),
   ('teks.countdown.selesai', 'Teks setelah hitung mundur habis', 'teks', 'Hitung mundur', 2, 'Tandika sudah terbang. Titip doa dari sini.'),
 

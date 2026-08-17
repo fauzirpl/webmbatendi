@@ -3,6 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+  Kartu pratinjau tautan (Open Graph) untuk WhatsApp, Telegram, dsb.
+
+  WAJIB berada di <head> HTML mentah seperti ini, BUKAN di dalam <helmet>
+  milik x-dc: crawler WhatsApp tidak menjalankan JavaScript, jadi apa pun
+  yang disuntik React saat runtime tidak akan pernah dibacanya.
+
+  og:image harus URL absolut dan bisa diakses tanpa login. Ditunjuk ke
+  berkas statis di domain sendiri, bukan ke foto di Supabase Storage —
+  nama berkas di sana bertimestamp dan yang lama dihapus setiap kali
+  fotonya diganti lewat panel, jadi pratinjaunya bakal patah sendiri.
+
+  WhatsApp menyimpan kartu ini di cache cukup lama. Kalau og.jpg diganti,
+  naikkan angka ?v= di bawah supaya dianggap gambar baru.
+-->
+<title>Pelepasan Tandika — Bidang KPA</title>
+<meta name="description" content="Kartu pelepasan digital untuk Tandika Nisaa Utami. Titip kesan, harapan, dan doa sebelum ia terbang ke New York.">
+<link rel="canonical" href="https://tandika.kpa.my.id/">
+<meta name="theme-color" content="#0F1B2D">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bidang KPA">
+<meta property="og:locale" content="id_ID">
+<meta property="og:url" content="https://tandika.kpa.my.id/">
+<meta property="og:title" content="Pelepasan Tandika — From MYC Straight to NYC">
+<meta property="og:description" content="Titip kesan, harapan, dan doa buat Tandika sebelum ia terbang ke New York. Dari satu bidang, Bidang KPA.">
+<meta property="og:image" content="https://tandika.kpa.my.id/assets/og.jpg?v=1">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Boarding pass bertuliskan Pelepasan Tandika, MYC ke NYC, 30 Agustus 2026.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pelepasan Tandika — From MYC Straight to NYC">
+<meta name="twitter:description" content="Titip kesan, harapan, dan doa buat Tandika sebelum ia terbang ke New York.">
+<meta name="twitter:image" content="https://tandika.kpa.my.id/assets/og.jpg?v=1">
+
 <script src="./support.js"></script>
 </head>
 <body>
@@ -105,10 +143,10 @@ textarea{resize:none}
 </div>
 <div style="margin-top:12px;padding:13px 14px;border-radius:13px;background:#0B121F;border:1px solid rgba(245,240,230,.1)">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px 12px;font-family:'Space Mono',monospace">
-<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">FLIGHT</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">KPA—2308</div></div>
-<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">TUJUAN</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">PELEPASAN TANDIKA</div></div>
-<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">GATE</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">ANJ. SULAWESI</div></div>
-<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">STATUS</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#7BC98A;animation:blink 1.3s steps(1) infinite">ON TIME</div></div>
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">FLIGHT</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">{{ dpFlight }}</div></div>
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">TUJUAN</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">{{ dpTujuan }}</div></div>
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">GATE</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#F5F0E6">{{ dpGate }}</div></div>
+<div><div style="font-size:7.5px;letter-spacing:.14em;color:rgba(245,240,230,.4)">STATUS</div><div style="margin-top:2px;font-size:12px;font-weight:700;color:#7BC98A;animation:blink 1.3s steps(1) infinite">{{ dpStatus }}</div></div>
 </div>
 </div>
 <div style="margin-top:16px;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(245,240,230,.5);text-align:center">BOARDING DALAM</div>
@@ -1061,6 +1099,14 @@ class Component extends DCLogic {
 
       cdCatatan: c('teks.countdown.catatan', 'Minggu, 30 Agustus 2026 · 07:00 WIB · Tandika terbang ke New York'),
       cdSelesai: c('teks.countdown.selesai', 'Tandika sudah terbang. Titip doa dari sini.'),
+
+      // Papan Departures — isinya menyesuaikan hitung mundur, yaitu
+      // penerbangannya, bukan acara pelepasannya. Dibuat bisa diedit karena
+      // nomor penerbangan dan bandaranya cuma kamu yang tahu.
+      dpFlight: c('teks.departures.flight', 'KPA—3008'),
+      dpTujuan: c('teks.departures.tujuan', 'NEW YORK, USA'),
+      dpGate:   c('teks.departures.gate',   'JAKARTA — CGK'),
+      dpStatus: c('teks.departures.status', 'ON TIME'),
 
       ...this.rundownVals()
     };

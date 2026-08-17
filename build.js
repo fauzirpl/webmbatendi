@@ -40,11 +40,20 @@ const assetsSrc = path.join(ROOT, 'assets');
 const assetsOut = path.join(OUT, 'assets');
 fs.mkdirSync(assetsOut, { recursive: true });
 
-const files = fs.existsSync(assetsSrc) ? fs.readdirSync(assetsSrc) : [];
+// README.md di assets/ itu catatan untuk yang membaca repo, bukan berkas
+// yang perlu tersaji ke pengunjung.
+const files = (fs.existsSync(assetsSrc) ? fs.readdirSync(assetsSrc) : [])
+  .filter(f => f.toLowerCase() !== 'readme.md');
 for (const f of files) {
   fs.copyFileSync(path.join(assetsSrc, f), path.join(assetsOut, f));
 }
 console.log('  assets/         ' + files.length + ' file');
+
+// Gambar kartu pratinjau tautan. Kalau hilang, tautan yang dibagikan di
+// WhatsApp tampil tanpa gambar — tidak rusak, tapi jauh kurang menarik.
+if (!files.includes('og.jpg')) {
+  console.warn('\n  ! assets/og.jpg tidak ada — pratinjau tautan WhatsApp akan tampil tanpa gambar.');
+}
 
 // Aset ini OPSIONAL sejak stiker & musik bisa diunggah lewat panel admin.
 // Kalau ada di sini, dipakai sebagai cadangan waktu panel belum diisi —
@@ -56,8 +65,9 @@ const CADANGAN = [
 ];
 const kurang = CADANGAN.filter(f => !files.includes(f));
 if (kurang.length === CADANGAN.length) {
-  console.log('\n  assets/ kosong — stiker & musik diambil dari panel admin.');
-  console.log('  Yang belum diunggah di panel akan disembunyikan, bukan jadi gambar rusak.\n');
+  console.log('\n  Tidak ada berkas cadangan di assets/ — stiker & musik diambil');
+  console.log('  dari panel admin. Yang belum diunggah di sana akan disembunyikan,');
+  console.log('  bukan jadi gambar rusak.\n');
 } else if (kurang.length) {
   console.log('\n  ' + (CADANGAN.length - kurang.length) + '/' + CADANGAN.length + ' berkas cadangan ada di assets/. Belum ada:');
   for (const f of kurang) console.log('      - ' + f);
